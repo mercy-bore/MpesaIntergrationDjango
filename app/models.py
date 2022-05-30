@@ -10,3 +10,13 @@ class User(models.Model):
     password = models.CharField(max_length = 30)
     phone_number  = models.IntegerField(max_length = 12)
     email = models.EmailField(max_length = 30)
+
+class Photographer(models.Model):
+    first_name =  models.CharField(max_length = 150)
+    last_name = models.CharField(max_length = 150)
+    password = models.CharField(max_length = 30)
+    phone_number  = models.IntegerField(max_length = 12)
+    email = models.EmailField(max_length = 30)
+    profile_picture  = models.ImageField(upload_to = 'images/')
+
+
