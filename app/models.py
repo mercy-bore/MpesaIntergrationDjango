@@ -33,7 +33,11 @@ class Event(models.Model):
     status  = models.BooleanField()
     noOfPhotos = models.IntegerField(default = 5)
     photos = models.ImageField(default = 'image.jpeg')
-    photographer  = models.ForeignKey(Photographer,default = 1, on_delete=models.CASCADE)
+    photographer  = models.ForeignKey(Photographer, on_delete=models.CASCADE)
+
+class Rating(models.Model):
+    photograher = models.ForeignKey(Photographer, on_delete=models.CASCADE)
+    stars = models.IntegerField()
     
 
     
