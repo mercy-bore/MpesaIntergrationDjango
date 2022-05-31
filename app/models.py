@@ -5,18 +5,36 @@ class User(models.Model):
     '''
     This is a user model that has all the information about the user
     '''
-    first_name =  models.CharField(max_length = 150)
-    last_name = models.CharField(max_length = 150)
-    password = models.CharField(max_length = 30)
-    phone_number  = models.IntegerField(max_length = 12)
-    email = models.EmailField(max_length = 30)
+    first_name =  models.CharField(max_length = 149, default = 'first name')
+    last_name = models.CharField(max_length = 149, default = 'last name')
+    password = models.CharField(max_length = 29, default = 'password')
+    phone_number  = models.IntegerField(default = 254712345677)
+    email = models.EmailField(max_length = 30, default =  'piczangu@gmail.com')
 
 class Photographer(models.Model):
-    first_name =  models.CharField(max_length = 150)
-    last_name = models.CharField(max_length = 150)
-    password = models.CharField(max_length = 30)
-    phone_number  = models.IntegerField(max_length = 12)
-    email = models.EmailField(max_length = 30)
-    profile_picture  = models.ImageField(upload_to = 'images/')
+    '''
+    This is a photographer model with the information about the photograher
+    '''
+    first_name =  models.CharField(max_length = 149 , default = 'first name')
+    last_name = models.CharField(max_length = 149, default = 'last name')
+    username = models.CharField(max_length = 29, default = 'username')
+    password = models.CharField(max_length = 29, default = 'password')
+    phone_number  = models.IntegerField(default = 254712345677)
+    email = models.EmailField(max_length = 29, default = 'piczangu@gmail.com')
+    profile_picture  = models.ImageField(upload_to = 'images/', default = 'image.jpg')
+    website  = models.URLField(max_length = 199, blank = True)
 
+class Event(models.Model):
+    code = models.IntegerField(default = 1234)
+    name = models.CharField(max_length = 30, default = 'Alumni Event')
+    Location = models.CharField(max_length = 100, default = 'Nairobi,Kenya')
+    date  = models.DateField( auto_now_add=True)
+    price = models.FloatField()
+    status  = models.BooleanField()
+    noOfPhotos = models.IntegerField(default = 5)
+
+    
+     
+
+    
 
