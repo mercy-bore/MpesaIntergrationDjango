@@ -39,6 +39,10 @@ class Rating(models.Model):
     photograher = models.ForeignKey(Photographer, on_delete=models.CASCADE)
     stars = models.IntegerField()
     
+class Portfolio(models.Model):
+    photographer = models.ForeignKey(Photographer, on_delete= models.CASCADE)
+    category = models.CharField(max_length = 30)
+    images = models.ImageField()
 
     
      
