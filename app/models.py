@@ -44,6 +44,14 @@ class Portfolio(models.Model):
     category = models.CharField(max_length = 30)
     images = models.ImageField()
 
+class PhotographerAccount(models.Model):
+    photograher = models.ForeignKey(Photographer, on_delete = models.CASCADE)
+    sales_amount = models.IntegerField()
+    orders = models.IntegerField()
+    doenloads = models.IntegerField()
+    customers = models.IntegerField()
+
+
     
      
 
