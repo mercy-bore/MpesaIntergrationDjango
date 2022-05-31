@@ -32,6 +32,8 @@ class Event(models.Model):
     price = models.FloatField()
     status  = models.BooleanField()
     noOfPhotos = models.IntegerField(default = 5)
+    photographer  = models.ForeignKey(Photographer,default = 1, on_delete=models.CASCADE)
+    
 
     
      
