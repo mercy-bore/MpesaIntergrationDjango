@@ -25,6 +25,9 @@ class Photographer(models.Model):
     website  = models.URLField(max_length = 199, blank = True)
 
 class Event(models.Model):
+    '''
+    This is the event model with the information about the event, including when it will be the location etc
+    '''
     code = models.IntegerField(default = 1234)
     name = models.CharField(max_length = 30, default = 'Alumni Event')
     Location = models.CharField(max_length = 100, default = 'Nairobi,Kenya')
@@ -36,20 +39,43 @@ class Event(models.Model):
     photographer  = models.ForeignKey(Photographer, on_delete=models.CASCADE)
 
 class Rating(models.Model):
+    '''
+    This is a rating model. It will allow a user to rate a photograher
+    '''
     photograher = models.ForeignKey(Photographer, on_delete=models.CASCADE)
     stars = models.IntegerField()
     
 class Portfolio(models.Model):
+    '''
+    This is a portfolio model. It stores the photos of the photographer per category e.g wedding, wildlife, etc
+    '''
     photographer = models.ForeignKey(Photographer, on_delete= models.CASCADE)
     category = models.CharField(max_length = 30)
     images = models.ImageField()
 
 class PhotographerAccount(models.Model):
+    '''
+    This is a photographer's account  model. It stores account details of a photographer
+    '''
     photograher = models.ForeignKey(Photographer, on_delete = models.CASCADE)
     sales_amount = models.IntegerField()
     orders = models.IntegerField()
-    doenloads = models.IntegerField()
+    downloads = models.IntegerField()
     customers = models.IntegerField()
+
+class BoughtPhotos(models.Model):
+    '''
+    This model stores  information about photos that have been bought e.g  number of photos
+    '''
+    photographer =  models.ForeignKey(Photographer, on_delete = models.CASCADE)
+    transaction_number = models.IntegerField()
+    date = models.DateField()
+    phone_number = models.IntegerField(max_length=12)
+    total_amount = models.IntegerField()
+    noOfPhotos = models.IntegerField()
+
+
+
 
 
     
