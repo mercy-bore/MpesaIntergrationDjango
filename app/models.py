@@ -68,12 +68,21 @@ class BoughtPhotos(models.Model):
     This model stores  information about photos that have been bought e.g  number of photos
     '''
     photographer =  models.ForeignKey(Photographer, on_delete = models.CASCADE)
-    transaction_number = models.IntegerField()
+    transaction_number = models.CharField(max_length = 70)
     date = models.DateField()
-    phone_number = models.IntegerField(max_length=12)
+    phone_number = models.IntegerField()
     total_amount = models.IntegerField()
     noOfPhotos = models.IntegerField()
 
+class Photos(models.Model):
+    '''
+    This models stores the information of the photos being uploaded by the photogrphers
+    '''
+    photographer = models.ForeignKey(Photographer, on_delete = models.CASCADE)
+    name = models.CharField(max_length = 30)
+    image = models.ImageField(upload_to = 'photos')
+    price = models.FloatField()
+    category = models.CharField(max_length = 30)
 
 
 
