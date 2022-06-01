@@ -84,6 +84,12 @@ class Photos(models.Model):
     price = models.FloatField()
     category = models.CharField(max_length = 30)
 
+class Feedback(models.Model):
+    user =  models.ForeignKey(User, on_delete = models.CASCADE)
+    email = models.EmailField(max_length = 30)
+    phone_number = models.IntegerField()
+    question = models.TextField()
+    
 
 
 
