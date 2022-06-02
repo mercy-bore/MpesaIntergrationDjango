@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Photographer,User,Event,Photos,Feeedback, PhotographerAccount,
+from .models import Photographer,User,Event,Photos,Feedback,PhotographerAccount
 
 class PhotographerSerializer(serializers.ModelSerializer):
     class Meta:
