@@ -85,6 +85,9 @@ class Photos(models.Model):
     category = models.CharField(max_length = 30)
 
 class Feedback(models.Model):
+    '''
+    This model stores the details about the questions or feeback given by a user
+    '''
     user =  models.ForeignKey(User, on_delete = models.CASCADE)
     email = models.EmailField(max_length = 30)
     phone_number = models.IntegerField()
