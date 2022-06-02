@@ -90,7 +90,12 @@ class Feedback(models.Model):
     phone_number = models.IntegerField()
     question = models.TextField()
     
-
+class PhotoUsers(models.Model):
+    '''
+    This model stores information about photos bought by a specific user
+    '''
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    photos = models.ForeignKey(Photos, on_delete = models.CASCADE) 
 
 
     
