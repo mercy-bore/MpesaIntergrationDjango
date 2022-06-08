@@ -1,20 +1,34 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 # Create your models here
+
+
+
 class User(models.Model):
     '''
     This is a user model that has all the information about the user
     '''
+   
     first_name =  models.CharField(max_length = 149, default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
+    username = models.CharField(max_length = 29, default = 'username')  
     password = models.CharField(max_length = 29, default = 'password')
     phone_number  = models.IntegerField(default = 254712345677)
     email = models.EmailField(max_length = 30, default =  'piczangu@gmail.com')
+
+    def __str__(self):
+        return self.first_name
+      
+    def save_user(self):
+        self.save()
+
 
 class Photographer(models.Model):
     '''
     This is a photographer model with the information about the photograher
     '''
+
     first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')
@@ -23,6 +37,17 @@ class Photographer(models.Model):
     email = models.EmailField(max_length = 29, default = 'piczangu@gmail.com')
     profile_picture  = models.ImageField(upload_to = 'images/', default = 'image.jpg')
     website  = models.URLField(max_length = 199, blank = True)
+
+    def __str__(self):
+        return self.first_name
+      
+    def save_photographer(self):
+        self.save()
+
+    @classmethod
+    def search_by_first_name(cls,search_term):
+        photographer = cls.objects.filter(first_name__icontains=search_term)
+        return photographer
 
 class Event(models.Model):
     '''
@@ -38,6 +63,12 @@ class Event(models.Model):
     photos = models.ImageField(default = 'image.jpeg')
     photographer  = models.ForeignKey(Photographer, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+      
+    def save_event(self):
+        self.save()
+   
 class Rating(models.Model):
     '''
     This is a rating model. It will allow a user to rate a photograher
@@ -53,6 +84,11 @@ class Portfolio(models.Model):
     category = models.CharField(max_length = 30)
     images = models.ImageField()
 
+    def __str__(self):
+        return self.category
+      
+    def save_portfolio(self):
+        self.save()
 class PhotographerAccount(models.Model):
     '''
     This is a photographer's account  model. It stores account details of a photographer
@@ -76,7 +112,7 @@ class BoughtPhotos(models.Model):
 
 class Photos(models.Model):
     '''
-    This models stores the information of the photos being uploaded by the photogrphers
+    This models stores the information of the photos being uploaded by the photographers
     '''
     photographer = models.ForeignKey(Photographer, on_delete = models.CASCADE)
     name = models.CharField(max_length = 30)
@@ -86,12 +122,18 @@ class Photos(models.Model):
 
 class Feedback(models.Model):
     '''
-    This model stores the details about the questions or feeback given by a user
+    This model stores the details about the questions or feedback given by a user
     '''
     user =  models.ForeignKey(User, on_delete = models.CASCADE)
     email = models.EmailField(max_length = 30)
     phone_number = models.IntegerField()
     question = models.TextField()
+
+    def __str__(self):
+        return self.question
+      
+    def save_feedback(self):
+        self.save()
     
 class PhotoUsers(models.Model):
     '''
