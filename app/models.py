@@ -4,6 +4,7 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from rest_framework.authtoken.models import Token
+
 # Create your models here
 
 
@@ -13,7 +14,7 @@ class User(AbstractUser):
     is_seller = models.BooleanField(default=False)
   
     def __str__(self):
-        return self.username 
+        return (self.username) 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -45,7 +46,7 @@ class Photographer(models.Model):
     '''
     This is a photographer model with the information about the photographer
     '''
-   
+    seller = models.OneToOneField(User, related_name='seller', on_delete=models.CASCADE)
     first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')
@@ -56,7 +57,7 @@ class Photographer(models.Model):
     website  = models.URLField(max_length = 199, blank = True)
 
     def __str__(self):
-        return self.username
+        return str(self.user.username)
       
     def save_photographer(self):
         self.save()
