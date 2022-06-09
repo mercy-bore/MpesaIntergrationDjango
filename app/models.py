@@ -1,16 +1,33 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from rest_framework.authtoken.models import Token
 # Create your models here
 
 
+class User(AbstractUser):
+  #Boolean fields to select the type of account.
+    is_buyer= models.BooleanField(default=False) 
+    is_seller = models.BooleanField(default=False)
+  
+    def __str__(self):
+        return self.username 
 
-class User(models.Model):
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+    
+
+
+class Buyer(models.Model):
     '''
     This is a user model that has all the information about the user
     '''
-   
-    first_name =  models.CharField(max_length = 149, default = 'first name')
+    user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
+    first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')  
     password = models.CharField(max_length = 29, default = 'password')
@@ -18,7 +35,7 @@ class User(models.Model):
     email = models.EmailField(max_length = 30, default =  'piczangu@gmail.com')
 
     def __str__(self):
-        return self.first_name
+        return self.username
       
     def save_user(self):
         self.save()
@@ -26,9 +43,9 @@ class User(models.Model):
 
 class Photographer(models.Model):
     '''
-    This is a photographer model with the information about the photograher
+    This is a photographer model with the information about the photographer
     '''
-
+   
     first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')
@@ -39,7 +56,7 @@ class Photographer(models.Model):
     website  = models.URLField(max_length = 199, blank = True)
 
     def __str__(self):
-        return self.first_name
+        return self.username
       
     def save_photographer(self):
         self.save()
@@ -73,7 +90,7 @@ class Rating(models.Model):
     '''
     This is a rating model. It will allow a user to rate a photograher
     '''
-    photograher = models.ForeignKey(Photographer, on_delete=models.CASCADE)
+    photographer = models.ForeignKey(Photographer, on_delete=models.CASCADE)
     stars = models.IntegerField()
     
 class Portfolio(models.Model):
