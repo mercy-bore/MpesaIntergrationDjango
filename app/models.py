@@ -11,7 +11,7 @@ from rest_framework.authtoken.models import Token
 class User(AbstractUser):
   #Boolean fields to select the type of account.
     is_buyer= models.BooleanField(default=False) 
-    is_seller = models.BooleanField(default=False)
+    is_photographer = models.BooleanField(default=False)
   
     def __str__(self):
         return (self.username) 
@@ -27,7 +27,7 @@ class Buyer(models.Model):
     '''
     This is a user model that has all the information about the user
     '''
-    user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
+    user=models.OneToOneField(User, related_name='buyer', on_delete=models.CASCADE)
     first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')  
@@ -46,7 +46,7 @@ class Photographer(models.Model):
     '''
     This is a photographer model with the information about the photographer
     '''
-    seller = models.OneToOneField(User, related_name='seller', on_delete=models.CASCADE)
+    user=models.OneToOneField(User, related_name="photographer", on_delete=models.CASCADE)
     first_name =  models.CharField(max_length = 149 , default = 'first name')
     last_name = models.CharField(max_length = 149, default = 'last name')
     username = models.CharField(max_length = 29, default = 'username')
