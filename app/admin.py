@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import User,Photographer,Event,Rating, PhotographerAccount,BoughtPhotos,Portfolio,Photos,PhotoUsers,Buyer
+from .models import User,Photographer,Event,Rating, PhotographerAccount,BoughtPhotos,Portfolio,Photos,PhotoUsers,Client
 
 # Register your models here
 admin.site.register(User)
-admin.site.register(Buyer)
+admin.site.register(Client)
 admin.site.register(Photographer)
 admin.site.register(Event)
 admin.site.register(Rating)

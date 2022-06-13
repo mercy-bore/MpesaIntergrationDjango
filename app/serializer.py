@@ -1,16 +1,58 @@
 from rest_framework import serializers
-from .models import Photographer,User,Event,Photos,Feedback,PhotographerAccount
+from app.models import Photographer,User,Client,Event,Photos,Feedback
 
-class PhotographerSerializer(serializers.ModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Photographer
-        fields = ('id','first_name','last_name','email')
+        model=User
+        fields=['username', 'email', 'is_client', 'is_photographer']
 
-class BuyerSerializer(serializers.ModelSerializer):
+class PhotographerSignupSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
     class Meta:
-        model = User
-        fields = ('id','first_name','last_name','email') 
-
+        model=User
+        fields=['username','email','password', 'password2']
+        extra_kwargs={
+            'password':{'write_only':True}
+        }
+    
+    def save(self, **kwargs):
+        user=User(
+            username=self.validated_data['username'],
+            email=self.validated_data['email']
+        )
+        password=self.validated_data['password']
+        password2=self.validated_data['password2']
+        if password !=password2:
+            raise serializers.ValidationError({"error":"password do not match"})
+        user.set_password(password)
+        user.is_photographer=True
+        user.save()
+        Photographer.objects.create(user=user)
+        return user
+class ClientSignupSerializer(serializers.ModelSerializer):
+    password2=serializers.CharField(style={"input_type":"password"}, write_only=True)
+    class Meta:
+        model=User
+        fields=['username','email','password', 'password2']
+        extra_kwargs={
+            'password':{'write_only':True}
+        }
+    
+    def save(self, **kwargs):
+        user=User(
+            username=self.validated_data['username'],
+            email=self.validated_data['email']
+        )
+        password=self.validated_data['password']
+        password2=self.validated_data['password2']
+        if password !=password2:
+            raise serializers.ValidationError({"error":"password do not match"})
+        user.set_password(password)
+        user.is_client=True
+        user.save()
+        Client.objects.create(user=user)
+        return user
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
