@@ -6,7 +6,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=['username', 'email', 'is_client', 'is_photographer']
-
+class PhotographerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Photographer
+        fields = '__all__'
 class PhotographerSignupSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
     class Meta:
@@ -56,7 +59,7 @@ class ClientSignupSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('id','name','location','price','noOfPhotos','photos')
+        fields = '__all__'
 
 class PhotosSerializer(serializers.ModelSerializer):
     class Meta:

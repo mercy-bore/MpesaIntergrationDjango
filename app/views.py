@@ -8,15 +8,44 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from .permissions import IsClientUser, IsPhotographerUser
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.generics import GenericAPIView
-from django.http import request
+from django.http import request,Http404
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-
+class  PhotographerView(APIView):
+    def get(self,request,format=None):
+        all_photographers = Photographer.objects.all()
+        serializers = PhotographerSerializer(all_photographers, many=True)
+        return Response(serializers.data)
+    
+    def get_photographer(self, pk):
+        try:
+            return Photographer.objects.get(pk=pk)
+        except Photographer.DoesNotExist:
+            return Http404
+        
+    def get_single(self, request, pk, format=None):
+        photographer = self.get_photographer(pk)
+        serializers = PhotographerSerializer(photographer)
+        return Response(serializers.data)
+    
+    def put(self, request, pk, format=None):
+        photographer = self.get_photographer(pk)
+        serializers = PhotographerSerializer(photographer, request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk, format=None):
+        photographer = self.get_photographer(pk)
+        photographer.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
 class PhotographerSignupView(generics.GenericAPIView):
     serializer_class=PhotographerSignupSerializer
-
     def post(self, request, *args, **kwargs):
         serializer=self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -26,7 +55,10 @@ class PhotographerSignupView(generics.GenericAPIView):
             "token":Token.objects.get(user=user).key,
             "message":"account created successfully"
         })
-
+    def get(self, request,format=None):
+        photographers = Photographer.objects.all()
+        serializers = PhotographerSignupSerializer(photographers, many=True)
+        return Response(serializers.data)
 
 class ClientSignupView(generics.GenericAPIView):
     serializer_class=ClientSignupSerializer
@@ -73,33 +105,6 @@ class PhotographerOnlyView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-# Create your views here.
-# class Photographers(APIView):
-#     def get(self, request,format=None):
-#         photographers = Photographer.objects.all()
-#         serializers = PhotographerSerializer(photographers, many=True)
-#         return Response(serializers.data)
-#     def post(self, request, format=None):
-#         serializers = PhotographerSerializer(data=request.data)
-#         if serializers.is_valid():
-#             serializers.save()
-#             return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class Users(APIView):
-#     def get(self, request,format=None):
-#         users = User.objects.all()
-#         serializers = BuyerSerializer(users, many=True)
-#         return Response(serializers.data)
-#     def post(self, request, format=None):
-#         serializers = BuyerSerializer(data=request.data)
-#         if serializers.is_valid():
-#             serializers.save()
-#             return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class Events(APIView):
     def get(self, request,format=None):
@@ -107,6 +112,7 @@ class Events(APIView):
         serializers = EventSerializer(events, many=True)
         return Response(serializers.data)
     def post(self, request, format=None):
+        media_type = 'image/'
         serializers = EventSerializer(data=request.data)
         if serializers.is_valid():
             serializers.save()
@@ -127,53 +133,9 @@ class PhotosList(APIView):
             return Response(serializers.data, status=status.HTTP_201_CREATED)
 
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
-    ###authentication
-    
-
-# class CustomAuthToken(ObtainAuthToken):
-#     def post(self, request, *args, **kwargs):
-#         serializer=self.serializer_class(data=request.data, context={'request':request})
-#         serializer.is_valid(raise_exception=True)
-#         user=serializer.validated_data['user']
-#         token, created=Token.objects.get_or_create(user=user)
-#         return Response({
-#             'token':token.key,
-#             'user_id':user.pk,
-#             'is_buyer':user.is_buyer,
-#             'is_photographer':user.is_photographer
-#         })
-
 
 class LogoutView(APIView):
     def post(self, request, format=None):
         request.auth.delete()
         return Response(status=status.HTTP_200_OK)
-
-
-# class ReigsterView(GenericAPIView):
-#     serializer_class = BuyerSerializer
-
-#     def post(self, request):
-#         serializer = BuyerSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             user=serializer.save()
-#             return Response({
-#             "user":BuyerSerializer(user, context=self.get_serializer_context()).data,
-#             "token":Token.objects.get(user=user).key,
-#             "message":"account created successfully"
-#         })
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# class GetUser(APIView):  
-#     def get(self,request,id):
-#         print(id)
-#         if id:
-#             user = get_object_or_404(User, id=id)
-
-        
-#             User_serializer = BuyerSerializer(user) 
-        
-#             return Response(User_serializer.data)
 

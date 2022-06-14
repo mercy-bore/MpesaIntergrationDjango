@@ -65,7 +65,7 @@ class Event(models.Model):
     price = models.FloatField()
     status  = models.BooleanField()
     noOfPhotos = models.IntegerField(default = 5)
-    photos = models.ImageField(default = 'image.jpeg')
+    photos = models.ImageField(upload_to='sale/',default = 'image.jpeg')
     photographer  = models.ForeignKey(Photographer, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -73,7 +73,7 @@ class Event(models.Model):
       
     def save_event(self):
         self.save()
-   
+  
 class Rating(models.Model):
     '''
     This is a rating model. It will allow a user to rate a photograher
