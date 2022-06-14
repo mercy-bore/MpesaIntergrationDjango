@@ -19,13 +19,15 @@ class  PhotographerView(APIView):
         serializers = PhotographerSerializer(all_photographers, many=True)
         return Response(serializers.data)
     
-    def get_photographer(self, pk):
+    def get_photographer(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
         try:
             return Photographer.objects.get(pk=pk)
         except Photographer.DoesNotExist:
             return Http404
         
-    def get_single(self, request, pk, format=None):
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
         photographer = self.get_photographer(pk)
         serializers = PhotographerSerializer(photographer)
         return Response(serializers.data)
@@ -43,7 +45,41 @@ class  PhotographerView(APIView):
         photographer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class  ClientView(APIView):
+    def get(self,request,format=None):
+        all_clients = Client.objects.all()
+        serializers = ClientSerializer(all_clients, many=True)
+        return Response(serializers.data)
     
+    def get_client(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        try:
+            return Client.objects.get(pk=pk)
+        except Client.DoesNotExist:
+            return Http404
+        
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        client = self.get_client(pk)
+        serializers = ClientSerializer(client)
+        return Response(serializers.data)
+    
+    def put(self, request,*args, **kwargs):
+        pk = self.kwargs.get('pk')
+        client = self.get_client(pk)
+        serializers = ClientSerializer(client,request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        client = self.get_client(pk)
+        client.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+       
 class PhotographerSignupView(generics.GenericAPIView):
     serializer_class=PhotographerSignupSerializer
     def post(self, request, *args, **kwargs):
@@ -55,10 +91,7 @@ class PhotographerSignupView(generics.GenericAPIView):
             "token":Token.objects.get(user=user).key,
             "message":"account created successfully"
         })
-    def get(self, request,format=None):
-        photographers = Photographer.objects.all()
-        serializers = PhotographerSignupSerializer(photographers, many=True)
-        return Response(serializers.data)
+    
 
 class ClientSignupView(generics.GenericAPIView):
     serializer_class=ClientSignupSerializer
