@@ -10,6 +10,10 @@ class PhotographerSerializer(serializers.ModelSerializer):
     class Meta:
         model=Photographer
         fields = '__all__'
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Client
+        fields = '__all__'
 class PhotographerSignupSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"}, write_only=True)
     class Meta:
