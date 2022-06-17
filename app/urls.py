@@ -1,27 +1,38 @@
+
+
 from django.conf.urls.static import static
 from rest_framework import routers
-from django.urls import re_path,include
+from django.urls import re_path, path, include
 from . import views
 from django.conf import settings
-from .views import ( CustomAuthToken, LogoutView, ClientSignupView,PhotographerSignupView,PhotographerView, ClientView)
-from rest_framework import routers
+from .views import *
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'events', views.AllEvents, basename='events')
+router.register(r'feedback', views.AllFeedback, basename='feedback')
+router.register(r'portfolios', views.AllPortfolios, basename='portfolios')
+router.register(r'photos', views.AllPhotos, basename='photos')
+router.register(r'users', views.AllUsers, basename='users')
+router.register(r'clients', views.AllClients, basename='clients')
+router.register(r'photographers', views.AllPhotographers,
+                basename='photographers')
 
 '''
 The urls and API endpoints
 '''
 
-urlpatterns=[
-    re_path('photographer-id/(?P<pk>[0-9]+)/',
-        views.PhotographerView.as_view()),
-    re_path(r'^client-id/(?P<pk>[0-9]+)/$',
-        views.ClientView.as_view()),
+urlpatterns = [
+    path('api/', include(router.urls)),
+    re_path(r'^event-id/(?P<pk>[0-9]+)/$',
+            views.EventView.as_view()),
     re_path('signup/client/new/', ClientSignupView.as_view()),
     re_path('signup/photographer/new/', PhotographerSignupView.as_view()),
-    re_path('photographers/',PhotographerView.as_view()),
-    re_path('clients/',ClientView.as_view()),
-    re_path(r'^api/events/$', views.Events.as_view()),  #api endpoint  for all events
-    re_path(r'^api/photos/$', views.PhotosList.as_view()),  #api endpoint  for all photos
+    # api endpoint  for all events
+    re_path(r'^events/$', views.EventView.as_view()),
+    # api endpoint  for all photos
+    re_path(r'^photos/$', views.PhotosList.as_view()),
 
 ]
 if settings.DEBUG:
-    urlpatterns+= static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

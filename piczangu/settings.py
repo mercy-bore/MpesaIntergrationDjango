@@ -92,9 +92,9 @@ DATABASES = {
     'default': {
       
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'piczangu',
+        'NAME':  'piczangu',
         'USER': 'mercy',
-    'PASSWORD':'cherotich1998',
+    'PASSWORD':'chero1998',
     }
 }
 
@@ -114,10 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    }
 ]
-
-AUTH_USER_MODEL = 'app.User'
+AUTH_USER_MODEL = "app.User"
 ACCOUNT_UNIQUE_EMAIL = True
 
 

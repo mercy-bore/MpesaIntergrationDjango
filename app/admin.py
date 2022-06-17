@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,Photographer,Event,Rating, PhotographerAccount,BoughtPhotos,Portfolio,Photos,PhotoUsers,Client
+from .models import Photographer,Event,Rating, PhotographerAccount,BoughtPhotos,Portfolio,Photos,PhotoUsers,Client,User
 
 # Register your models here
 admin.site.register(User)

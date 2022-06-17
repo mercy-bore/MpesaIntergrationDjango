@@ -1,121 +1,92 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.renderers import TemplateHTMLRenderer
-from .models import *
-from .serializer import *
-from rest_framework.generics import get_object_or_404
-from rest_framework.authtoken.views import ObtainAuthToken
-from .permissions import IsClientUser, IsPhotographerUser
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.generics import GenericAPIView
-from django.http import request,Http404
+
+from django.http import request, Http404, HttpResponse, JsonResponse
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from .models import *
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import api_view
+from .serializer import *
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.views import APIView
+from .permissions import IsClientUser, IsPhotographerUser
+from rest_framework.permissions import AllowAny
 
-class  PhotographerView(APIView):
-    def get(self,request,format=None):
-        all_photographers = Photographer.objects.all()
-        serializers = PhotographerSerializer(all_photographers, many=True)
-        return Response(serializers.data)
-    
-    def get_photographer(self, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        try:
-            return Photographer.objects.get(pk=pk)
-        except Photographer.DoesNotExist:
-            return Http404
-        
-    def get(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        photographer = self.get_photographer(pk)
-        serializers = PhotographerSerializer(photographer)
-        return Response(serializers.data)
-    
-    def put(self, request, pk, format=None):
-        photographer = self.get_photographer(pk)
-        serializers = PhotographerSerializer(photographer, request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data)
-        else:
-            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, pk, format=None):
-        photographer = self.get_photographer(pk)
-        photographer.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class  ClientView(APIView):
-    def get(self,request,format=None):
-        all_clients = Client.objects.all()
-        serializers = ClientSerializer(all_clients, many=True)
-        return Response(serializers.data)
-    
-    def get_client(self, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        try:
-            return Client.objects.get(pk=pk)
-        except Client.DoesNotExist:
-            return Http404
-        
-    def get(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        client = self.get_client(pk)
-        serializers = ClientSerializer(client)
-        return Response(serializers.data)
-    
-    def put(self, request,*args, **kwargs):
-        pk = self.kwargs.get('pk')
-        client = self.get_client(pk)
-        serializers = ClientSerializer(client,request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data)
-        else:
-            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        client = self.get_client(pk)
-        client.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-       
-class PhotographerSignupView(generics.GenericAPIView):
-    serializer_class=PhotographerSignupSerializer
-    def post(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user=serializer.save()
-        return Response({
-            "user":UserSerializer(user, context=self.get_serializer_context()).data,
-            "token":Token.objects.get(user=user).key,
-            "message":"account created successfully"
-        })
-    
 
-class ClientSignupView(generics.GenericAPIView):
-    serializer_class=ClientSignupSerializer
-    def post(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user=serializer.save()
-        return Response({
-            "user":UserSerializer(user, context=self.get_serializer_context()).data,
-            "token":Token.objects.get(user=user).key,
-            "message":"account created successfully"
-        })
+class Get_all_photographers(generics.ListCreateAPIView):
+    queryset = Photographer.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = PhotographerSerializer
+
+
+class Get_all_clients(generics.ListCreateAPIView):
+    queryset = Client.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = ClientSerializer
+
+
+class Get_all_users(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
+
+
+class AllUsers(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+class AllPhotographers(viewsets.ModelViewSet):
+    serializer_class = PhotographerSerializer
+    queryset = Photographer.objects.all()
+
+
+class AllClients(viewsets.ModelViewSet):
+    serializer_class = ClientSerializer
+    queryset = Client.objects.all()
+
+
+class AllEvents(viewsets.ModelViewSet):
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+
+class AllPhotos(viewsets.ModelViewSet):
+    serializer_class = PhotosSerializer
+    queryset = Photos.objects.all()
+
+
+class AllFeedback(viewsets.ModelViewSet):
+    serializer_class = FeedbackSerializer
+    queryset = Feedback.objects.all()
+class AllPortfolios(viewsets.ModelViewSet):
+    serializer_class = PortfolioSerializer
+    queryset = Portfolio.objects.all()
+
+class ClientSignupView(generics.CreateAPIView):
+    queryset = Client.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = ClientSignupSerializer
+
+
+class PhotographerSignupView(generics.CreateAPIView):
+    queryset = Photographer.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = PhotographerSignupSerializer
+
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        serializer=self.serializer_class(data=request.data, context={'request':request})
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        user=serializer.validated_data['user']
-        token, created=Token.objects.get_or_create(user=user)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
         return Response({
-            'token':token.key,
-            'user_id':user.pk,
-            'is_client':user.is_client,
-            'is_photographer':user.is_photographer
+            'token': token.key,
+            'user_id': user.pk,
+            'is_client': user.is_client,
+            'is_photographer': user.is_photographer
         })
 
 
@@ -126,26 +97,28 @@ class LogoutView(APIView):
 
 
 class ClientOnlyView(generics.RetrieveAPIView):
-    permission_classes=[permissions.IsAuthenticated&IsClientUser]
-    serializer_class=UserSerializer
+    permission_classes = [permissions.IsAuthenticated & IsClientUser]
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
+
 
 class PhotographerOnlyView(generics.RetrieveAPIView):
-    permission_classes=[permissions.IsAuthenticated&IsPhotographerUser]
-    serializer_class=UserSerializer
+    permission_classes = [permissions.IsAuthenticated & IsPhotographerUser]
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
 
-class Events(APIView):
-    def get(self, request,format=None):
-        events = Event.objects.all()
-        serializers = EventSerializer(events, many=True)
+
+class EventView(APIView):
+    def get_all(self, request, format=None):
+        all = Event.objects.all()
+        serializers = EventSerializer(all, many=True)
         return Response(serializers.data)
+
     def post(self, request, format=None):
-        media_type = 'image/'
         serializers = EventSerializer(data=request.data)
         if serializers.is_valid():
             serializers.save()
@@ -153,12 +126,40 @@ class Events(APIView):
 
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
+    def get_event(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        try:
+            return Event.objects.get(pk=pk)
+        except Event.DoesNotExist:
+            return Http404
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        event = self.get_event(pk)
+        serializers = EventSerializer(event)
+        return Response(serializers.data)
+
+    def put(self, request, pk, format=None):
+        event = self.get_event(pk)
+        serializers = EventSerializer(event, request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        event = self.get_event(pk)
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class PhotosList(APIView):
-    def get(self, request,format=None):
+    def get(self, request, format=None):
         photos = Photos.objects.all()
         serializers = PhotosSerializer(photos, many=True)
         return Response(serializers.data)
+
     def post(self, request, format=None):
         serializers = PhotosSerializer(data=request.data)
         if serializers.is_valid():
@@ -167,8 +168,8 @@ class PhotosList(APIView):
 
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LogoutView(APIView):
     def post(self, request, format=None):
         request.auth.delete()
         return Response(status=status.HTTP_200_OK)
-
