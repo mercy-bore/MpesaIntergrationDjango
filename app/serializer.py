@@ -105,3 +105,29 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = ('id', 'email', 'phone_number', 'question')
+class FileUploadSerializer(serializers.ModelSerializer):        
+    file = serializers.ListField(
+        child=serializers.FileField(max_length=100000,
+        allow_empty_file=False,
+        use_url=False ))
+
+    class Meta:
+        model = Portfolio
+        fields = '__all__'
+
+    def create(self, validated_data):
+        category=validated_data['category']
+        photographer=validated_data['photographer']
+        file=validated_data.pop('file')   
+        image_list = []     
+        for img in file:
+            photo=Portfolio.objects.create(file=img,category=category,photographer=photographer)
+            imageurl = f'{photo.file.url}'
+            image_list.append(imageurl)        
+        return image_list
+
+
+class FileUploadDisplaySerializer(serializers.ModelSerializer):        
+    class Meta:
+        model = Portfolio
+        fields = '__all__'

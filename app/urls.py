@@ -7,6 +7,7 @@ from . import views
 from django.conf import settings
 from .views import *
 from rest_framework.routers import DefaultRouter
+
 router = DefaultRouter()
 router.register(r'events', views.AllEvents, basename='events')
 router.register(r'feedback', views.AllFeedback, basename='feedback')
@@ -23,14 +24,11 @@ The urls and API endpoints
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    re_path(r'^event-id/(?P<pk>[0-9]+)/$',
-            views.EventView.as_view()),
+    path('upload/', FileUploadView.as_view(), name='file-upload'),
     re_path('signup/client/new/', ClientSignupView.as_view()),
     re_path('signup/photographer/new/', PhotographerSignupView.as_view()),
     # api endpoint  for all events
-    re_path(r'^events/$', views.EventView.as_view()),
-    # api endpoint  for all photos
-    re_path(r'^photos/$', views.PhotosList.as_view()),
+   
 
 ]
 if settings.DEBUG:

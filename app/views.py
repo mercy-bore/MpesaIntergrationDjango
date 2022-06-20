@@ -12,7 +12,20 @@ from rest_framework.views import APIView
 from .permissions import IsClientUser, IsPhotographerUser
 from rest_framework.permissions import AllowAny
 
-
+class FileUploadView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = FileUploadDisplaySerializer
+    def post(self, request, format=None): 
+        serializer = FileUploadSerializer(data=request.data)
+        if serializer.is_valid():    #validate the serialized data to make sure its valid       
+            qs = serializer.save()                     
+            message = {'detail':qs, 'status':True}
+            return Response(message, status=status.HTTP_201_CREATED)
+        else: #if the serialzed data is not valid, return erro response
+            data = {"detail":serializer.errors, 'status':False}            
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        return Portfolio.objects.all()
 class Get_all_photographers(generics.ListCreateAPIView):
     queryset = Photographer.objects.all()
     permission_classes = (AllowAny,)
@@ -110,64 +123,6 @@ class PhotographerOnlyView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-
-
-class EventView(APIView):
-    def get_all(self, request, format=None):
-        all = Event.objects.all()
-        serializers = EventSerializer(all, many=True)
-        return Response(serializers.data)
-
-    def post(self, request, format=None):
-        serializers = EventSerializer(data=request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_event(self, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        try:
-            return Event.objects.get(pk=pk)
-        except Event.DoesNotExist:
-            return Http404
-
-    def get(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        event = self.get_event(pk)
-        serializers = EventSerializer(event)
-        return Response(serializers.data)
-
-    def put(self, request, pk, format=None):
-        event = self.get_event(pk)
-        serializers = EventSerializer(event, request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data)
-        else:
-            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        event = self.get_event(pk)
-        event.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class PhotosList(APIView):
-    def get(self, request, format=None):
-        photos = Photos.objects.all()
-        serializers = PhotosSerializer(photos, many=True)
-        return Response(serializers.data)
-
-    def post(self, request, format=None):
-        serializers = PhotosSerializer(data=request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class LogoutView(APIView):
     def post(self, request, format=None):
