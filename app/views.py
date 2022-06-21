@@ -1,6 +1,6 @@
 
 from django.http import request, Http404, HttpResponse, JsonResponse
-from rest_framework import viewsets, generics, permissions, status
+from rest_framework import viewsets, generics, permissions, status, filters
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .models import *
@@ -26,6 +26,7 @@ class FileUploadView(generics.ListCreateAPIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
     def get_queryset(self):
         return Portfolio.objects.all()
+
 class Get_all_photographers(generics.ListCreateAPIView):
     queryset = Photographer.objects.all()
     permission_classes = (AllowAny,)
@@ -45,13 +46,15 @@ class Get_all_users(generics.ListCreateAPIView):
 
 
 class AllUsers(viewsets.ModelViewSet):
+   
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class AllPhotographers(viewsets.ModelViewSet):
-    serializer_class = PhotographerSerializer
     queryset = Photographer.objects.all()
+    serializer_class = PhotographerSerializer
+
 
 
 class AllClients(viewsets.ModelViewSet):
@@ -65,6 +68,7 @@ class AllEvents(viewsets.ModelViewSet):
 
 
 class AllPhotos(viewsets.ModelViewSet):
+  
     serializer_class = PhotosSerializer
     queryset = Photos.objects.all()
 
@@ -75,6 +79,14 @@ class AllFeedback(viewsets.ModelViewSet):
 class AllPortfolios(viewsets.ModelViewSet):
     serializer_class = PortfolioSerializer
     queryset = Portfolio.objects.all()
+
+class HomepageView(viewsets.ModelViewSet):
+    serializer_class = HomepageSerializer
+    queryset = Homepage.objects.all()
+    
+class WatermarksView(viewsets.ModelViewSet):
+    serializer_class = WatermarksSerializer
+    queryset = Watermarks.objects.all()
 
 class ClientSignupView(generics.CreateAPIView):
     queryset = Client.objects.all()

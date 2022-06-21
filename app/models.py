@@ -94,7 +94,7 @@ class Portfolio(models.Model):
     '''
     photographer = models.ForeignKey(Photographer,  on_delete= models.CASCADE)
     category = models.CharField(max_length = 30)
-    file= models.FileField(default='image.jpeg',upload_to='portfolio')
+    file= models.FileField(default='image.jpeg',upload_to='portfolio/')
 
     def __str__(self):
         return self.category
@@ -151,3 +151,27 @@ class PhotoUsers(models.Model):
     '''
     photos = models.ForeignKey(Photos, on_delete = models.CASCADE) 
 
+class Homepage(models.Model):
+    '''
+    This is a models that allows the admin to upload photos used in the homepage
+    '''
+    name  = models.CharField(max_length = 30)
+    file = models.ImageField(default='image.jpeg',upload_to='homepage_photos/')
+
+    def __str__(self):
+        return self.name
+      
+    def save_homepage(self):
+        self.save() 
+class Watermarks(models.Model):
+    '''
+    This is a watermarks model. It stores the watermarked photos uploaded by the admin
+    '''
+    name = models.CharField(max_length = 30)
+    file = models.ImageField(default='image.jpeg',upload_to='watermarks/')
+
+    def __str__(self):
+        return self.name
+    def save_watermarks(self):
+        self.save()
+   

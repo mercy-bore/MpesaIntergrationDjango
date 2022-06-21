@@ -7,7 +7,8 @@ from django.contrib.auth.password_validation import validate_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username', 'email','first_name' ,'last_name','is_client', 'is_photographer']
+        fields = ['id', 'username', 'email', 'first_name',
+                  'last_name', 'is_client', 'is_photographer']
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -21,7 +22,7 @@ class PhotographerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photographer
         fields = ['id', 'username', 'first_name',
-                  'last_name', 'email','phone_number', 'type', 'country', 'region']
+                  'last_name', 'email', 'phone_number', 'type', 'country', 'region']
 
 
 class ClientSignupSerializer(serializers.ModelSerializer):
@@ -45,17 +46,17 @@ class ClientSignupSerializer(serializers.ModelSerializer):
         client = User.objects.create(
             email=validated_data['email'],
             username=validated_data['username'],
-            first_name=validated_data['first_name'], last_name=validated_data['last_name'],
-          )
-
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'])
         client.set_password(validated_data['password'])
-        client.is_client=True
+        client.is_client = True
         if client.save():
             Client.objects.create(client=client)
             raise serializers.ValidationError(
                 {"successFULL": "Successfully saved!"})
         return client
-       
+
+
 class PhotographerSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         # write_only=True,
@@ -79,13 +80,14 @@ class PhotographerSignupSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             first_name=validated_data['first_name'], last_name=validated_data['last_name'])
         photographer.set_password(validated_data['password'])
-        photographer.is_photographer=True
+        photographer.is_photographer = True
         if photographer.save():
             Photographer.objects.create(photographer=photographer)
             raise serializers.ValidationError(
                 {"successFULL": "Successfully saved!"})
         return photographer
-   
+
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
@@ -97,37 +99,54 @@ class PhotosSerializer(serializers.ModelSerializer):
         model = Photos
         fields = '__all__'
 
+
 class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = '__all__'
+
+class HomepageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Homepage
+        fields = '__all__'
+        
+class WatermarksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Watermarks
+        fields = '__all__'
+
+
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = ('id', 'email', 'phone_number', 'question')
-class FileUploadSerializer(serializers.ModelSerializer):        
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
     file = serializers.ListField(
-        child=serializers.FileField(max_length=100000,
-        allow_empty_file=False,
-        use_url=False ))
+    child=serializers.FileField(max_length=100000,
+                                    allow_empty_file=False,
+                                    use_url=False))
 
     class Meta:
         model = Portfolio
         fields = '__all__'
 
     def create(self, validated_data):
-        category=validated_data['category']
-        photographer=validated_data['photographer']
-        file=validated_data.pop('file')   
-        image_list = []     
+        category = validated_data['category']
+        photographer = validated_data['photographer']
+        file = validated_data.pop('file')
+        image_list = []
         for img in file:
-            photo=Portfolio.objects.create(file=img,category=category,photographer=photographer)
+            photo = Portfolio.objects.create(
+                file=img, category=category, photographer=photographer)
             imageurl = f'{photo.file.url}'
-            image_list.append(imageurl)        
+            image_list.append(imageurl)
         return image_list
 
 
-class FileUploadDisplaySerializer(serializers.ModelSerializer):        
+class FileUploadDisplaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = '__all__'
+
