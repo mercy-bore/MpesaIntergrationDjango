@@ -19,10 +19,12 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class PhotographerSerializer(serializers.ModelSerializer):
+    rating = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Photographer
         fields = ['id', 'username', 'first_name',
-                  'last_name', 'email', 'phone_number', 'type', 'country', 'region']
+                  'last_name', 'email', 'phone_number', 'type', 'country', 'region','rating']
 
 
 class ClientSignupSerializer(serializers.ModelSerializer):
@@ -150,3 +152,7 @@ class FileUploadDisplaySerializer(serializers.ModelSerializer):
         model = Portfolio
         fields = '__all__'
 
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'

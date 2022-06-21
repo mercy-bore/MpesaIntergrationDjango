@@ -15,6 +15,7 @@ router.register(r'portfolios', views.AllPortfolios, basename='portfolios')
 router.register(r'photos', views.AllPhotos, basename='photos')
 router.register(r'users', views.AllUsers, basename='users')
 router.register(r'clients', views.AllClients, basename='clients')
+router.register(r'rating', views.RatingView, basename='rating')
 router.register(r'watermarks', views.WatermarksView, basename='watermarks')
 router.register(r'homepage', views.HomepageView, basename='homepage')
 router.register(r'photographers', views.AllPhotographers,

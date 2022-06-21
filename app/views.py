@@ -87,7 +87,9 @@ class HomepageView(viewsets.ModelViewSet):
 class WatermarksView(viewsets.ModelViewSet):
     serializer_class = WatermarksSerializer
     queryset = Watermarks.objects.all()
-
+class RatingView(viewsets.ModelViewSet):
+    serializer_class = RatingSerializer
+    queryset = Rating.objects.all()
 class ClientSignupView(generics.CreateAPIView):
     queryset = Client.objects.all()
     permission_classes = (AllowAny,)
