@@ -24,14 +24,14 @@ class Client(models.Model):
     This is a user model that has all the information about the user
     '''
     user=models.OneToOneField(User,related_name="client", on_delete=models.CASCADE)
-    username=models.CharField(max_length =30, default='John55')
-    first_name=models.CharField(max_length =30, default='John')
-    last_name=models.CharField(max_length = 30, default = 'Doe')
-    email=models.EmailField(max_length = 30,default='john@gmail.com')
-    phone_number  = models.IntegerField( null=True)
+    username=models.CharField(max_length=40)
+    first_name=models.CharField(max_length=20)
+    last_name=models.CharField(max_length=20)
+    email=models.EmailField(max_length=40)
+    phone_number=models.IntegerField(null=True)
 
     def __str__(self):
-        return str(self.phone_number) 
+        return str(self.id)
       
     def save_user(self):
         self.save()
@@ -85,20 +85,18 @@ class Rating(models.Model):
     '''
     This is a rating model. It will allow a user to rate a photograher
     '''
-    photographer = models.ForeignKey(Photographer,related_name='rating', on_delete=models.CASCADE)
+    photographer = models.ForeignKey(Photographer,related_name="rating", on_delete=models.CASCADE,null=False,blank=False)
     one = models.PositiveIntegerField(default=0, null=True, blank=True)
     two = models.PositiveIntegerField(default=0, null=True, blank=True)
     three = models.PositiveIntegerField(default=0, null=True, blank=True)
     four = models.PositiveIntegerField(default=0, null=True, blank=True)
     five = models.PositiveIntegerField(default=0, null=True, blank=True)
-    user = models.OneToOneField(User,related_name="user",default=1, on_delete=models.CASCADE)
+    user = models.OneToOneField(User,related_name="user",on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ['photographer']
+  
 
     def __str__(self):
-          # Extract all rating values and return max key.
-          # Reverse this Dict if there is a tie and you want the last key.
+    
           rating_list = {
             '1': self.one,
             '2': self.two,

@@ -46,20 +46,27 @@ class Get_all_users(generics.ListCreateAPIView):
 
 
 class AllUsers(viewsets.ModelViewSet):
-   
-    serializer_class = UserSerializer
     queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
 
 
 class AllPhotographers(viewsets.ModelViewSet):
     queryset = Photographer.objects.all()
     serializer_class = PhotographerSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+
 
 
 
 class AllClients(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+
 
 
 class AllEvents(viewsets.ModelViewSet):
@@ -90,11 +97,24 @@ class WatermarksView(viewsets.ModelViewSet):
 class RatingView(viewsets.ModelViewSet):
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
-class ClientSignupView(generics.CreateAPIView):
-    queryset = Client.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = ClientSignupSerializer
+# class ClientSignupView(generics.CreateAPIView):
+#     queryset = Client.objects.all()
+#     permission_classes = (AllowAny,)
+#     serializer_class = ClientSignupSerializer
 
+
+class ClientSignupView(viewsets.ModelViewSet):
+    serializer_class=ClientSignupSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer=self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user=serializer.save()
+        return Response({
+            "user":UserSerializer(user, context=self.get_serializer_context()).data,
+            "token":Token.objects.get(user=user).key,
+            "message":"account created successfully"
+        })
 
 class PhotographerSignupView(generics.CreateAPIView):
     queryset = Photographer.objects.all()

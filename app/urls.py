@@ -16,6 +16,7 @@ router.register(r'photos', views.AllPhotos, basename='photos')
 router.register(r'users', views.AllUsers, basename='users')
 router.register(r'clients', views.AllClients, basename='clients')
 router.register(r'rating', views.RatingView, basename='rating')
+router.register(r'signup',views.ClientSignupView, basename='signup')
 router.register(r'watermarks', views.WatermarksView, basename='watermarks')
 router.register(r'homepage', views.HomepageView, basename='homepage')
 router.register(r'photographers', views.AllPhotographers,
@@ -28,7 +29,6 @@ The urls and API endpoints
 urlpatterns = [
     path('api/', include(router.urls)),
     path('upload/portfoliophotos/', FileUploadView.as_view(), name='file-upload'),
-    re_path('signup/client/new/', ClientSignupView.as_view()),
     re_path('signup/photographer/new/', PhotographerSignupView.as_view()),
    
 
