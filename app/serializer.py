@@ -52,38 +52,34 @@ class ClientSignupSerializer(serializers.ModelSerializer):
         user.save()
         Client.objects.create(user=user)
         return user
-
 class PhotographerSignupSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        # write_only=True,
-        required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
-
+    password2=serializers.CharField(style={"input_type":"password"}, write_only=True)
     class Meta:
-        model = User
-        fields = ('email', 'username', 'password', 'password2',
-                  'first_name', 'last_name',)
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError(
-                {"passwordError": "Password fields did not match!"})
-        return attrs
-
+        model=User
+        fields=['username','first_name','last_name','email','password', 'password2']
+        extra_kwargs={
+            'password':{'write_only':True}
+        }
+    
     def save(self, **kwargs):
-        user = User.objects.create(
-            email=self.validated_data['email'],
+        user=User(
             username=self.validated_data['username'],
-            first_name=self.validated_data['first_name'], 
-            last_name=self.validated_data['last_name']
-            )
-        user.set_password('password')
-        user.is_photographer = True
-        if user.save():
-            Photographer.objects.create(user=user)
-            raise serializers.ValidationError(
-                {"successFULL": "Successfully saved!"})
+            email=self.validated_data['email'],
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+          
+
+        )
+        password=self.validated_data['password']
+        password2=self.validated_data['password2']
+        if password !=password2:
+            raise serializers.ValidationError({"error":"password do not match"})
+        user.set_password(password)
+        user.is_photographer=True
+        user.save()
+        Photographer.objects.create(user=user)
         return user
+
 
 
 class EventSerializer(serializers.ModelSerializer):

@@ -23,8 +23,8 @@ class Client(models.Model):
     '''
     This is a user model that has all the information about the user
     '''
-    user=models.OneToOneField(User,related_name="client", on_delete=models.CASCADE)
-    username=models.CharField(max_length=40)
+    user=models.OneToOneField(User,related_name="client",on_delete=models.CASCADE)
+    username=models.CharField(max_length=30)
     first_name=models.CharField(max_length=20)
     last_name=models.CharField(max_length=20)
     email=models.EmailField(max_length=40)
@@ -41,14 +41,14 @@ class Photographer(models.Model):
     This is a photographer model with the information about the photographer
     '''
     user=models.OneToOneField(User, related_name="photographer", on_delete=models.CASCADE)
-    username=models.CharField(max_length =30, default='John55')
-    first_name=models.CharField(max_length =30, default='John')
-    last_name=models.CharField(max_length = 30, default = 'Doe')
-    email=models.EmailField(max_length = 30,default='john@gmail.com')
+    username=models.CharField(max_length =30)
+    first_name=models.CharField(max_length =30)
+    last_name=models.CharField(max_length = 30)
+    email=models.EmailField(max_length = 30)
     phone_number  = models.IntegerField( null=True)
-    type=models.CharField(max_length =30, default='wildlife',blank=True)
-    country=models.CharField(max_length =30, default='Kenya',blank=True)
-    region=models.CharField(max_length = 30, default = 'Africa',blank=True)
+    type=models.CharField(max_length =30,blank=True)
+    country=models.CharField(max_length =30,blank=True)
+    region=models.CharField(max_length = 30,blank=True)
 
     def __str__(self):
         return str(self.user.username)
