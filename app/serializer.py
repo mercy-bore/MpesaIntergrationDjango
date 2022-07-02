@@ -148,3 +148,7 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = '__all__'
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MpesaPayment
+        fields = '__all__'

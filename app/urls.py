@@ -18,6 +18,7 @@ router.register(r'rating', views.RatingView, basename='rating')
 # router.register(r'signup',views.ClientSignupView, basename='signup')
 router.register(r'watermarks', views.WatermarksView, basename='watermarks')
 router.register(r'homepage', views.HomepageView, basename='homepage')
+# router.register(r'payment',views.Confirmation, basename='payment')
 router.register(r'photographers', views.AllPhotographers,
                 basename='photographers')
 
@@ -30,6 +31,17 @@ urlpatterns = [
     path('upload/portfoliophotos/', FileUploadView.as_view(), name='file-upload'),
     re_path('signup/photographer/new/', PhotographerSignupView.as_view()),
     re_path('signup/client/new/', ClientSignupView.as_view()),
+    #! mpesa
+    path('access/token', views.getAccessToken, name='get_mpesa_access_token'),
+    path('online/lipa', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
+        # register, confirmation, validation and callback urls
+    path('c2b/register', views.register_urls, name="register_mpesa_validation"),
+    # path('c2b/confirmation', views.confirmation, name="confirmation"),
+    path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
+
+    path('c2b/validation', views.validation, name="validation"),
+    path('c2b/callback', views.call_back, name="call_back"),
+
 
 
 ]
