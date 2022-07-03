@@ -232,3 +232,17 @@ class MpesaPayment(BaseModel):
         verbose_name_plural = 'Mpesa Payments'
     def __str__(self):
         return self.first_name
+
+class B2CPayment(BaseModel):
+    ResultDesc = models.TextField()
+    TransactionId = models.TextField()
+    TransactionReceipt = models.TextField()
+    TransactionAmount = models.IntegerField()
+    TransactionCompletedDateTime = models.TextField()
+    ReceiverPartyPubliName = models.TextField()
+   
+    class Meta:
+        verbose_name = 'B2C Payment'
+        verbose_name_plural = 'B2C Payments'
+    def __str__(self):
+        return self.ReceiverPartyPubliName

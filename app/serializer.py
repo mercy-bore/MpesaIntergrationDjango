@@ -148,7 +148,11 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = '__all__'
-class PaymentSerializer(serializers.ModelSerializer):
+class C2BPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MpesaPayment
+        fields = '__all__'
+class B2CPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = B2CPayment
         fields = '__all__'
