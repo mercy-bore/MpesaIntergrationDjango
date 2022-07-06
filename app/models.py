@@ -239,10 +239,20 @@ class B2CPayment(BaseModel):
     TransactionReceipt = models.TextField()
     TransactionAmount = models.IntegerField()
     TransactionCompletedDateTime = models.TextField()
-    ReceiverPartyPubliName = models.TextField()
-   
+    ReceiverPartyPublicName = models.TextField()
+  
     class Meta:
         verbose_name = 'B2C Payment'
         verbose_name_plural = 'B2C Payments'
     def __str__(self):
-        return self.ReceiverPartyPubliName
+        return self.ReceiverPartyPublicName
+    
+class Cart(BaseModel):
+    user=models.OneToOneField(User, related_name="cart", on_delete=models.CASCADE)
+    photo_id = models.ForeignKey(Photos, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    total = models.IntegerField()
+class Earnings(BaseModel):
+    photographer = models.ForeignKey(Photographer,  on_delete = models.CASCADE)
+    amount = models.IntegerField()
+    b2ctranasction  = models.ForeignKey(B2CPayment,  on_delete = models.CASCADE)

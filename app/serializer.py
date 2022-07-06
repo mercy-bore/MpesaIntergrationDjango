@@ -156,3 +156,13 @@ class B2CPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = B2CPayment
         fields = '__all__'
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = '__all__'
+
+class EarningsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Earnings
+        fields = '__all__'

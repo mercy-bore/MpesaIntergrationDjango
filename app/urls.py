@@ -21,7 +21,8 @@ router.register(r'homepage', views.HomepageView, basename='homepage')
 # router.register(r'payment',views.Confirmation, basename='payment')
 router.register(r'photographers', views.AllPhotographers,
                 basename='photographers')
-
+router.register(r'cart',views.CartView, basename='cart')
+router.register(r'earnings',views.EarningsView,basename='earnings')
 '''
 The urls and API endpoints
 '''
@@ -35,15 +36,16 @@ urlpatterns = [
     path('access/token', views.getAccessToken, name='get_mpesa_access_token'),
     path('online/lipa', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
         # register, confirmation, validation and callback urls
+    path('callback',views.call_back,name = "callback"),
     path('c2b/register', views.register_urls, name="register_mpesa_validation"),
-    # path('c2b/confirmation', views.confirmation, name="confirmation"),
     path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
-
     path('c2b/validation', views.validation, name="validation"),
     path('c2b/callback', views.call_back, name="call_back"),
-
-
-
+    # b2c URLs   
+    path('b2c/payment',views.B2C,name='payment'), 
+    path('b2c/queue',views.b2c_queue, name= "queue"),
+    path('b2c/result',views.b2c_result,name ='result'),
+    path('b2c/confirmation',B2CPayments.as_view(),name="confirmation")
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

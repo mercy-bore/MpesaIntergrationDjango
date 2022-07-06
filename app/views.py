@@ -1,4 +1,5 @@
 
+from cgi import print_directory
 from django.http import  HttpResponse, JsonResponse
 from rest_framework import viewsets, generics, permissions, status, filters
 from rest_framework.authtoken.models import Token
@@ -43,11 +44,12 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://sandbox.safaricom.co.ke/mpesa/",
+        "CallBackURL": "https://f0eb-41-90-187-177.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
     response = requests.post(api_url, json=request, headers=headers)
+    print(response.text)
     return HttpResponse('Success.STK push sent.',response)
     
 @csrf_exempt
@@ -57,13 +59,15 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://7986-41-90-189-91.in.ngrok.io/confirmation",
-               "ValidationURL": "https://7986-41-90-189-91.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://f0eb-41-90-187-177.in.ngrok.io/confirmation",
+               "ValidationURL": "https://f0eb-41-90-187-177.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
+    print(response.text)
     return HttpResponse(response.text)
 @csrf_exempt
 def call_back(request):
-    pass
+    pass 
+
 @csrf_exempt
 def validation(request):
     context = {
@@ -83,15 +87,31 @@ def B2C(request):
         "CommandID": "BusinessPayment",
         "Amount": 1,
         "PartyA": 600992,
-        "PartyB": 254708374149,
+        "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://7986-41-90-189-91.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://7986-41-90-189-91.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://f0eb-41-90-187-177.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://f0eb-41-90-187-177.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
     response = requests.post(api_url, json=request, headers=headers)
-    return HttpResponse('Success.Transaction from Piczangu to client initiated.',response.text.encode('utf8'))
+    print(response.text)
+    return HttpResponse('Success.Transaction from Piczangu to client initiated.',response)
+@csrf_exempt
+def b2c_result(request):
+    context = {
+        "ResultCode": 0,
+        "ResultDesc": "Accepted"
+    }
+    return JsonResponse(dict(context)) 
+
+@csrf_exempt
+def b2c_queue(request):
+    context = {
+        "ResultCode": 0,
+        "ResultDesc": "Accepted"
+    }
+    return JsonResponse(dict(context))
 class C2BPayments(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = C2BPaymentSerializer
@@ -124,6 +144,8 @@ class C2BPayments(generics.ListCreateAPIView):
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
     def get_queryset(self):
             return MpesaPayment.objects.all()
+    
+
 class B2CPayments(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = B2CPaymentSerializer
@@ -131,13 +153,12 @@ class B2CPayments(generics.ListCreateAPIView):
         mpesa_body =request.body.decode('utf-8')
         mpesa_payment = json.loads(mpesa_body)
         payment = B2CPayment.objects.create(
-            ResultDesc=mpesa_payment['ResultDesc'],
-            TransactionId=mpesa_payment['TransactionId'], 
-            TransactionReceipt=mpesa_payment['TransactionReceipt'], 
-            TransactionAmount=mpesa_payment['TransactionAmount'],
-            TransactionCompletedDateTime=mpesa_payment['TransactionCompletedDateTime'],
-            RecoverPartyPublicName=mpesa_payment['RecoverPartyPublicName'],
-           
+            ResultDesc=mpesa_payment['ResultDesc'], 
+            TransactionId=mpesa_payment['TransactionId'], #
+            TransactionReceipt=mpesa_payment['TransactionReceipt'], #
+            TransactionAmount=mpesa_payment['TransactionAmount'], #
+            TransactionCompletedDateTime=mpesa_payment['TransactionCompletedDateTime'], #
+            ReceiverPartyPublicName=mpesa_payment['ReceiverPartyPublicName'], #
         )   
         serializer = B2CPaymentSerializer(data=request.data)
         if serializer.is_valid():
@@ -145,16 +166,16 @@ class B2CPayments(generics.ListCreateAPIView):
             qs = json.dumps(payment)
             context = {
                 "ResultCode": 0,
-                "ResultDesc": "Sent"
+                "ResultDesc": "Accepted"
             }
             message = {'detail':qs, 'status':True, 'context':context}
             return Response(message, request.data,status=status.HTTP_201_CREATED)
-        else: #if the serialzed data is not valid, return error response
+        else: #if the serialized data is not valid, return error response
                 data = {"detail":serializer.errors, 'status':False}            
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
     def get_queryset(self):
             return B2CPayment.objects.all()
-
+       
 # * end of mpesa
 class FileUploadView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
@@ -217,7 +238,12 @@ class WatermarksView(viewsets.ModelViewSet):
 class RatingView(viewsets.ModelViewSet):
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
-
+class EarningsView(viewsets.ModelViewSet):
+    serializer_class = EarningsSerializer
+    queryset = Earnings.objects.all()
+class CartView(viewsets.ModelViewSet):
+    serializer_class = CartSerializer
+    queryset = Cart.objects.all()
 
 class PhotographerSignupView(generics.CreateAPIView):
     queryset = Photographer.objects.all()
