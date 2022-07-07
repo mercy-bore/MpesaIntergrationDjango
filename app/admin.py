@@ -15,3 +15,6 @@ admin.site.register(HomepagePhotos)
 admin.site.register(Photos)
 admin.site.register(PhotoUsers)
 admin.site.register(MpesaPayment)
+admin.site.register(Transaction)
+admin.site.register(Earnings)
+

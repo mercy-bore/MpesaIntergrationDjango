@@ -40,15 +40,14 @@ urlpatterns = [
     path('c2b/register', views.register_urls, name="register_mpesa_validation"),
     path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
     path('c2b/validation', views.validation, name="validation"),
-    # path('c2b/callback', views.MpesaCallBack.as_view(), name="call_back"),
     # b2c URLs   
     path('b2c/payment',views.B2C,name='payment'), 
     path('b2c/queue',views.b2c_queue, name= "queue"),
     path('b2c/result',views.b2c_result,name ='result'),
     path('b2c/confirmation',B2CPayments.as_view(),name="confirmation"),
     
-    path("checkout/", views.MpesaCheckout.as_view(), name="checkout"),
-    path("callback/", views.MpesaCallBack.as_view(), name="callback"),
+    path("checkout", views.MpesaCheckout.as_view(), name="checkout"),
+    path("callback", views.MpesaCallBack.as_view(), name="callback"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

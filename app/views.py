@@ -46,7 +46,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://de17-41-90-180-110.in.ngrok.io/callback",
+        "CallBackURL": "https://8593-41-90-187-177.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -61,8 +61,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://de17-41-90-180-110.in.ngrok.io/confirmation",
-               "ValidationURL": "https://de17-41-90-180-110.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://8593-41-90-187-177.in.ngrok.io/confirmation",
+               "ValidationURL": "https://8593-41-90-187-177.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
@@ -81,12 +81,39 @@ class MpesaCheckout(APIView):
 
 class MpesaCallBack(APIView):
     def get(self, request):
+        print(request)
+        print(Response)
         return Response({"status": "OK"}, status=200)
 
     def post(self, request, *args, **kwargs):
+        permission_classes = [AllowAny]
+        serializer_class = TransactionSerializer
         logging.info("{}".format("Callback from MPESA"))
-        data = request.body
-        return gateway.callback(json.loads(data))
+        mpesa_body = request.body        
+        mpesa_payment = json.loads(mpesa_body)
+        print(mpesa_payment)
+        payment = Transaction.objects.create(
+            transaction_no=mpesa_payment['transaction_no'], #
+            phone_number = mpesa_payment['phone_number'], #
+            checkout_request_id = mpesa_payment['checkout_request_id'], #
+            reference = mpesa_payment['reference'], #
+            description = mpesa_payment['description'], #
+            amount = mpesa_payment['amount'], #
+            status = mpesa_payment['status'], #
+            receipt_no = mpesa_payment['receipt_no'], #
+            created = mpesa_payment['created'], #
+            ip = mpesa_payment['ip'], #
+        )   
+        
+        
+        serializer = TransactionSerializer(data=request.data)
+        if serializer.is_valid():
+            payment = serializer.save()
+            qs = json.dumps(payment)
+            print(qs)
+            
+        return LipanaMpesaPpassword.callback_url(json.loads(qs))
+    
 @csrf_exempt
 def validation(request):
     context = {
@@ -108,8 +135,8 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://de17-41-90-180-110.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://de17-41-90-180-110.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://8593-41-90-187-177.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://8593-41-90-187-177.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 

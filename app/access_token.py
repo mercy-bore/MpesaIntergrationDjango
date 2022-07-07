@@ -68,13 +68,13 @@ class MpesaGateWay:
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://de17-41-90-180-110.in.ngrok.io/callback",
+        "CallBackURL": "https://8593-41-90-187-177.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
         }
 
         res = requests.post(
-            'https://4bc0-41-90-187-177.in.ngrok.io/checkout', json=req_data, headers=self.headers, timeout=30
+            'https://8593-41-90-187-177.in.ngrok.io/checkout', json=req_data, headers=self.headers, timeout=30
         )
         res_data = res.json()
         logging.info("Mpesa request data {}".format(req_data))
