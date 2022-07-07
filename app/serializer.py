@@ -99,9 +99,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
         model = Portfolio
         fields = '__all__'
 
-class HomepageSerializer(serializers.ModelSerializer):
+class HomepagePhotosSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Homepage
+        model = HomepagePhotos
         fields = '__all__'
         
 class WatermarksSerializer(serializers.ModelSerializer):
@@ -110,9 +110,9 @@ class WatermarksSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class FeedbackSerializer(serializers.ModelSerializer):
+class HelpFormSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Feedback
+        model = HelpForm
         fields = ('id', 'email', 'phone_number', 'question')
 
 
@@ -128,12 +128,12 @@ class FileUploadSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         category = validated_data['category']
-        photographer = validated_data['photographer']
+        photographer_id = validated_data['photographer_id']
         file = validated_data.pop('file')
         image_list = []
         for img in file:
             photo = Portfolio.objects.create(
-                file=img, category=category, photographer=photographer)
+                file=img, category=category, photographer_id=photographer_id)
             imageurl = f'{photo.file.url}'
             image_list.append(imageurl)
         return image_list
@@ -166,3 +166,16 @@ class EarningsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Earnings
         fields = '__all__'
+class MpesaCheckoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
+            "phone_number",
+            "amount",
+            "reference",
+            "description",
+        )
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = "__all__"

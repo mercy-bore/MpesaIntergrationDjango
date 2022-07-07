@@ -19,7 +19,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import MpesaPayment
 import requests
 import json
-
+import logging
+from .access_token import MpesaGateWay
+gateway = MpesaGateWay()
 # ! Mpesa
 
 def getAccessToken(request):
@@ -44,7 +46,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://f0eb-41-90-187-177.in.ngrok.io/callback",
+        "CallBackURL": "https://de17-41-90-180-110.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -59,15 +61,32 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://f0eb-41-90-187-177.in.ngrok.io/confirmation",
-               "ValidationURL": "https://f0eb-41-90-187-177.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://de17-41-90-180-110.in.ngrok.io/confirmation",
+               "ValidationURL": "https://de17-41-90-180-110.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
-@csrf_exempt
-def call_back(request):
-    pass 
 
+
+class MpesaCheckout(APIView):
+    serializer = MpesaCheckoutSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            payload = {"data":serializer.validated_data, "request":request}
+            res = gateway.stk_push_request(payload)
+            return Response(res, status=200)
+
+
+class MpesaCallBack(APIView):
+    def get(self, request):
+        return Response({"status": "OK"}, status=200)
+
+    def post(self, request, *args, **kwargs):
+        logging.info("{}".format("Callback from MPESA"))
+        data = request.body
+        return gateway.callback(json.loads(data))
 @csrf_exempt
 def validation(request):
     context = {
@@ -89,8 +108,8 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://f0eb-41-90-187-177.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://f0eb-41-90-187-177.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://de17-41-90-180-110.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://de17-41-90-180-110.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
@@ -221,16 +240,16 @@ class AllPhotos(viewsets.ModelViewSet):
     serializer_class = PhotosSerializer
     queryset = Photos.objects.all()
 
-class AllFeedback(viewsets.ModelViewSet):
-    serializer_class = FeedbackSerializer
-    queryset = Feedback.objects.all()
+class HelpFormView(viewsets.ModelViewSet):
+    serializer_class = HelpFormSerializer
+    queryset = HelpForm.objects.all()
 class AllPortfolios(viewsets.ModelViewSet):
     serializer_class = PortfolioSerializer
     queryset = Portfolio.objects.all()
 
-class HomepageView(viewsets.ModelViewSet):
-    serializer_class = HomepageSerializer
-    queryset = Homepage.objects.all()
+class HomepagePhotosView(viewsets.ModelViewSet):
+    serializer_class = HomepagePhotosSerializer
+    queryset = HomepagePhotos.objects.all()
     
 class WatermarksView(viewsets.ModelViewSet):
     serializer_class = WatermarksSerializer
