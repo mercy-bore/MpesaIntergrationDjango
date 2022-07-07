@@ -31,10 +31,10 @@ class Client(models.Model):
     first_name=models.CharField(max_length=20)
     last_name=models.CharField(max_length=20)
     email=models.EmailField(max_length=40)
-    location = models.CharField(max_length = 30)
+    location = models.CharField(max_length = 30,default='moringa')
     phone_number=models.IntegerField(null=True)
-    password = models.CharField(max_length= 30)
-    password2 = models.CharField(max_length =30)
+    password = models.CharField(max_length= 30,default='moringa')
+    password2 = models.CharField(max_length =30,default='moringa')
     
 
     def __str__(self):
@@ -56,6 +56,8 @@ class Photographer(models.Model):
     type=models.CharField(max_length =30,blank=True)
     country=models.CharField(max_length =30,blank=True)
     region=models.CharField(max_length = 30,blank=True)
+    password2 = models.CharField(max_length =30,default='moringa')
+    password2 = models.CharField(max_length =30,default='moringa')
 
     def __str__(self):
         return str(self.user.username)
@@ -117,7 +119,7 @@ class PhotographerAccount(models.Model):
     '''
     This is a photographer's account  model. It stores account details of a photographer
     '''
-    photograher_id = models.ForeignKey(Photographer,  on_delete = models.CASCADE)
+    photographer_id = models.ForeignKey(Photographer,  on_delete = models.CASCADE)
     sales_amount = models.IntegerField()
     orders = models.IntegerField()
     downloads = models.IntegerField()
