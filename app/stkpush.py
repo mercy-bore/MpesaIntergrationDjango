@@ -5,9 +5,12 @@ import base64
 from datetime import datetime
 import requests
 from requests.auth import HTTPBasicAuth
+from rest_framework.response import Response
+from phonenumber_field.phonenumber import PhoneNumber
+from decouple import config
 from piczangu.settings import env
-
 from .models import Transaction
+from .serializer import TransactionSerializer
 
 logging = logging.getLogger("default")
 
@@ -24,14 +27,14 @@ class MpesaGateWay:
 
     def __init__(self):
         now = datetime.now()
-        self.shortcode = env("shortcode")
-        self.consumer_key = env("consumer_key")
-        self.consumer_secret = env("consumer_secret")
-        self.access_token_url = env("access_token_url")
+        self.shortcode = config("shortcode")
+        self.consumer_key = config("consumer_key")
+        self.consumer_secret = config("consumer_secret")
+        self.access_token_url = config("access_token_url")
 
         self.password = self.generate_password()
-        self.c2b_callback = env("c2b_callback")
-        self.checkout_url = env("checkout_url")
+        self.c2b_callback = config("c2b_callback")
+        self.checkout_url = config("checkout_url")
 
         try:
             self.access_token = self.getAccessToken()
@@ -73,8 +76,9 @@ class MpesaGateWay:
 
     def generate_password(self):
         """Generates mpesa api password using the provided shortcode and passkey"""
-        self.timestamp = datetime.now.strftime("%Y%m%d%H%M%S")
-        password_str = env("shortcode") + env("pass_key") + self.timestamp
+        now = datetime.now()
+        self.timestamp = now.strftime("%Y%m%d%H%M%S")
+        password_str = config("shortcode") + config("pass_key") + self.timestamp
         password_bytes = password_str.encode("ascii")
         return base64.b64encode(password_bytes).decode("utf-8")
 
@@ -111,3 +115,55 @@ class MpesaGateWay:
 
             Transaction.objects.create(**data)
         return res_data
+
+    def check_status(self, data):
+        try:
+            status = data["Body"]["stkCallback"]["ResultCode"]
+        except Exception as e:
+            logging.error(f"Error: {e}")
+            status = 1
+        return status
+
+    def get_transaction_object(data):
+        checkout_request_id = data
+        transaction, _ = Transaction.objects.get_or_create(
+            checkout_request_id=checkout_request_id
+        )
+
+        return transaction
+
+    def handle_successful_pay(self, data, transaction):
+        items = data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+        for item in items:
+            if item["Name"] == "Amount":
+                amount = item["Value"]
+            elif item["Name"] == "MpesaReceiptNumber":
+                receipt_no = item["Value"]
+            elif item["Name"] == "PhoneNumber":
+                phone_number = item["Value"]
+
+        transaction.amount = amount
+        transaction.phone_number = PhoneNumber(raw_input=phone_number)
+        transaction.receipt_no = receipt_no
+        transaction.confirmed = True
+
+        return transaction
+
+    def callback_handler(self, data):
+        status = self.check_status(data)
+        transaction = self.get_transaction_object()
+        if status==0:
+            self.handle_successful_pay(data, transaction)
+        else:
+            transaction.status = 1
+
+        transaction.status = status
+        print(transaction)
+        transaction.save()
+
+        transaction_data = TransactionSerializer(transaction).data
+        print(transaction_data)
+
+        logging.info("Transaction completed info {}".format(transaction_data))
+
+        return Response({"status": "ok", "code": 0}, status=200)

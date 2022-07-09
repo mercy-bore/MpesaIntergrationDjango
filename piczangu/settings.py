@@ -12,9 +12,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
-
-
+import environ
 import os
+env = environ.Env(DEBUG=(bool, False))
+# reading .env file
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +30,7 @@ SECRET_KEY = 'django-insecure-09ch!22am&-ngpb*kfe4+#eqpqmap+y6+m9=*+)(o7%ykk*3+&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8593-41-90-187-177.in.ngrok.io','127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['98b9-41-90-188-129.in.ngrok.io','127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -43,11 +45,14 @@ INSTALLED_APPS = [
     'app',
     'rest_framework',
     'rest_framework.authtoken',
+    'knox',
+
 
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+
     ),
 }
 

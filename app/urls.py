@@ -5,9 +5,12 @@ from django.urls import re_path, path, include
 from . import views
 from django.conf import settings
 from .views import *
+from .stkpush import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
+
+urlpatterns = router.urls
 router.register(r'events', views.AllEvents, basename='events')
 router.register(r'feedback', views.HelpFormView, basename='feedback')
 router.register(r'portfolios', views.AllPortfolios, basename='portfolios')
@@ -40,6 +43,7 @@ urlpatterns = [
     path('c2b/register', views.register_urls, name="register_mpesa_validation"),
     path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
     path('c2b/validation', views.validation, name="validation"),
+  
     # b2c URLs   
     path('b2c/payment',views.B2C,name='payment'), 
     path('b2c/queue',views.b2c_queue, name= "queue"),
