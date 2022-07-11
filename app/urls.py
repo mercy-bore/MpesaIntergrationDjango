@@ -25,6 +25,7 @@ router.register(r'homepage', views.HomepagePhotosView, basename='homepage')
 router.register(r'photographers', views.AllPhotographers,
                 basename='photographers')
 router.register(r'cart',views.CartView, basename='cart')
+router.register(r'transactions',views.TransactionView, basename='transactions')
 router.register(r'earnings',views.EarningsView,basename='earnings')
 '''
 The urls and API endpoints

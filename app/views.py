@@ -48,7 +48,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://4b6d-41-90-187-177.in.ngrok.io/callback",
+        "CallBackURL": "https://427d-41-90-187-177.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -63,8 +63,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://4b6d-41-90-187-177.in.ngrok.io/confirmation",
-               "ValidationURL": "https://4b6d-41-90-187-177.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://427d-41-90-187-177.in.ngrok.io/confirmation",
+               "ValidationURL": "https://427d-41-90-187-177.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
@@ -137,8 +137,8 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://4b6d-41-90-187-177.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://4b6d-41-90-187-177.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://427d-41-90-187-177.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://427d-41-90-187-177.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
@@ -296,6 +296,9 @@ class EarningsView(viewsets.ModelViewSet):
 class CartView(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
+class TransactionView(viewsets.ModelViewSet):
+    serializer_class = TransactionSerializer
+    queryset = Transaction.objects.all()
 
 class PhotographerSignupView(generics.CreateAPIView):
     queryset = Photographer.objects.all()

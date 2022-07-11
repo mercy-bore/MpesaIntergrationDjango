@@ -22,5 +22,5 @@ class LipanaMpesaPpassword:
     online_password = base64.b64encode(data_to_encode.encode())
     decode_password = online_password.decode('utf-8')
     SecurityCredential= "l0SibbbSZXfy7/E3tdd5yq3V9ac8y1je+eHubrz5uPZL56CjE96Hg4thHhjs9DUd1K10bbeM222RPYx4fGCDyKDa5sAuo1EA7dHD7vy8NkVnZv4aJ7OL5HKRNUQpAP50fuI9I7sVs9wwbammjYzw0UvHHFrxfa7fjBDpAQ6Sa43bqmwsWgRquWyqDiCcgtkjg3HIIwJXcMZgGo1Je6HdUI1xw4bgu62dg+Zlvudft7pEcdJrCYPqzT3Z+IkbFZV0kkCthdVulCvkvyIc1mHsZqLOaNz+wRW2EhPCh9lXxOrJKgg5qoNut87VIdOpvAnZ3+Aju6ulumFZwZnBJpj8NQ==ss"
-    callback_url ='https://4b6d-41-90-187-177.in.ngrok.io/callback'
+    callback_url ='https://427d-41-90-187-177.in.ngrok.io/callback'
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
