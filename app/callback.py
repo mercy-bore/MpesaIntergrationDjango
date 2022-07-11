@@ -1,58 +1,27 @@
-# import logging
-# import requests
-# from rest_framework.response import Response
-# from phonenumber_field.phonenumber import PhoneNumber
+#   serializer_class = TransactionSerializer
+#     def post(self, request, *args, **kwargs):
+#         logging.info("{}".format("Callback from MPESA"))
+#         data = request.body
+#         # return gateway.callback_handler(json.loads(data))
+#         serializer = TransactionSerializer(data)
+#         if serializer.is_valid():
+#             payment = serializer.save()
+#             return gateway.callback_handler(json.loads(payment))
 
-# from .models import Transaction
-# from .serializer import TransactionSerializer
+#         else: #if the serialized data is not valid, return error response
+#                 data = {"detail":serializer.errors, 'status':False}            
+#                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-# logging = logging.getLogger("default")
-# def get_status(data):
-#     try:
-#         status = data["Body"]["stkCallback"]["ResultCode"]
-#     except Exception as e:
-#         logging.error(f"Error: {e}")
-#         status = 1 
-#     return status
 
-# def get_transaction_object(data):
-#     checkout_request_id = data["Body"]["stkCallback"]["CheckoutRequestID"]
-#     transaction, _ = Transaction.objects.get_or_create(
-#         checkout_request_id=checkout_request_id
-#     )
 
-#     return transaction
-
-# def handle_successful_pay(data, transaction):
-#     items = data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
-#     for item in items:
-#         if item["Name"] == "Amount":
-#             amount = item["Value"]
-#         elif item["Name"] == "MpesaReceiptNumber":
-#             receipt_no = item["Value"]
-#         elif item["Name"] == "PhoneNumber":
-#             phone_number = item["Value"]
-
-#     transaction.amount = amount
-#     transaction.phone_number = PhoneNumber(raw_input=phone_number)
-#     transaction.receipt_no = receipt_no
-#     transaction.confirmed = True
-
-#     return transaction
-
-# def callback_handler(data):
-#     status = get_status(data)
-#     transaction = get_transaction_object(data)
-#     if status==0:
-#         handle_successful_pay(data, transaction)
-#     else:
-#         transaction.status = 1
-
-#     transaction.status = status
-#     transaction.save()
-
-#     transaction_data = TransactionSerializer(transaction).data
-
-#     logging.info("Transaction completed info {}".format(transaction_data))
-
-#     return Response({"status": "ok", "code": 0}, status=200)
+{'id': 4,
+ 'transaction_no': 'a0ed1c06-8eaf-424d-b225-521c526e1745', 
+ 'phone_number': '',
+ 'checkout_request_id': '<app.stkpush.MpesaGateWay object at 0x7f15dfa151c0>',
+ 'reference': '', 
+ 'description': None, 
+ 'amount': '',
+ 'status': 1037,
+ 'receipt_no': None, 
+ 'created': '2022-07-09T08:29:22.844645+03:00',
+ 'ip': None}

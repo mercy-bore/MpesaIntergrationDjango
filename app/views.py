@@ -5,7 +5,7 @@ from rest_framework import viewsets, generics, permissions, status, filters
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .models import *
-
+import base64
 from rest_framework.decorators import api_view
 from .serializer import *
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -48,7 +48,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://98b9-41-90-188-129.in.ngrok.io/callback",
+        "CallBackURL": "https://4b6d-41-90-187-177.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -63,8 +63,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://98b9-41-90-188-129.in.ngrok.io/confirmation",
-               "ValidationURL": "https://98b9-41-90-188-129.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://4b6d-41-90-187-177.in.ngrok.io/confirmation",
+               "ValidationURL": "https://4b6d-41-90-187-177.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
@@ -137,8 +137,8 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://98b9-41-90-188-129.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://98b9-41-90-188-129.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://4b6d-41-90-187-177.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://4b6d-41-90-187-177.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
@@ -361,6 +361,10 @@ class MpesaCheckout(APIView):
 
 
 class MpesaCallBack(APIView):
+    
+    # queryset = Transaction.objects.all()
+    # permission_classes = (AllowAny,)
+    # serializer_class = TransactionSerializer
     def get(self, request):
         return Response(MpesaPayment.objects.all(), status=200)
 
@@ -370,3 +374,25 @@ class MpesaCallBack(APIView):
         logging.info("{}".format("Callback from MPESA"))
         data = request.body
         return gateway.callback_handler(json.loads(data))
+    #!
+    # permission_classes = [AllowAny]
+    # serializer_class =TransactionSerializer
+    # def post(self,request,format=None):
+    #     logging.info("{}".format("Callback from MPESA"))
+    #     mpesa_payment =request.body
+    #     payment = Transaction.objects.create(mpesa_payment) 
+    #     serializer = TransactionSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         payment = serializer.save()
+    #         qs = json.dumps(payment)
+    #         context = {
+    #             "ResultCode": 0,
+    #             "ResultDesc": "Accepted"
+    #         }
+    #         message = {'detail':qs, 'status':True, 'context':context}
+    #         return Response(message, request.data,status=status.HTTP_201_CREATED)
+    #     else: #if the serialzed data is not valid, return erro response
+    #             data = {"detail":serializer.errors, 'status':False}            
+    #             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+    # def get_queryset(self):
+    #         return Transaction.objects.all()

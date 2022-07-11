@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from phonenumber_field.phonenumber import PhoneNumber
 from decouple import config
 from piczangu.settings import env
-from .models import Transaction
+from .models import *
 from .serializer import TransactionSerializer
 
 logging = logging.getLogger("default")
@@ -84,6 +84,7 @@ class MpesaGateWay:
 
     @Decorators.refreshToken
     def stk_push_request(self, payload):
+        serializer_class =TransactionSerializer
         request = payload["request"]
         data = payload["data"]
         amount = data["amount"]
@@ -102,9 +103,9 @@ class MpesaGateWay:
             "TransactionDesc": "Test",
         }
 
-        res = requests.post(
+        res =  Transaction.objects.create(requests.post(
             self.checkout_url, json=req_data, headers=self.headers, timeout=30
-        )
+        ))
         res_data = res.json()
         logging.info("Mpesa request data {}".format(req_data))
         logging.info("Mpesa response info {}".format(res_data))
@@ -112,9 +113,11 @@ class MpesaGateWay:
         if res.ok:
             data["ip"] = request.META.get("REMOTE_ADDR")
             data["checkout_request_id"] = res_data["CheckoutRequestID"]
-
+            res_data.save()
             Transaction.objects.create(**data)
+            print(res_data)
         return res_data
+        
 
     def check_status(self, data):
         try:
