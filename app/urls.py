@@ -26,6 +26,7 @@ router.register(r'photographers', views.AllPhotographers,
                 basename='photographers')
 router.register(r'cart',views.CartView, basename='cart')
 router.register(r'transactions',views.TransactionView, basename='transactions')
+router.register(r'b2c/transactions',views.B2CTransactionView, basename='b2c/transactions')
 router.register(r'earnings',views.EarningsView,basename='earnings')
 '''
 The urls and API endpoints
@@ -37,22 +38,24 @@ urlpatterns = [
     re_path('signup/photographer/new/', PhotographerSignupView.as_view()),
     re_path('signup/client/new/', ClientSignupView.as_view()),
     #! mpesa
-    path('access/token', views.getAccessToken, name='get_mpesa_access_token'),
+    # path('access/token', views.getAccessToken, name='get_mpesa_access_token'),
     path('online/lipa', views.lipa_na_mpesa_online, name='lipa_na_mpesa'),
         # register, confirmation, validation and callback urls
     # path('callback',views.call_back,name = "callback"),
     path('c2b/register', views.register_urls, name="register_mpesa_validation"),
-    path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
+    # path('c2b/confirmation', C2BPayments.as_view(), name="confirmation"),
     path('c2b/validation', views.validation, name="validation"),
   
     # b2c URLs   
     path('b2c/payment',views.B2C,name='payment'), 
     path('b2c/queue',views.b2c_queue, name= "queue"),
     path('b2c/result',views.b2c_result,name ='result'),
-    path('b2c/confirmation',B2CPayments.as_view(),name="confirmation"),
+    # path('b2c/confirmation',B2CPayments.as_view(),name="confirmation"),
     
     path("checkout", views.MpesaCheckout.as_view(), name="checkout"),
     path("callback", views.MpesaCallBack.as_view(), name="callback"),
+    path("b2c/checkout", views.MpesaB2CCheckout.as_view(), name="checkout"),
+    path("b2c/callback", views.MpesaB2CResponse.as_view(), name="callback"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

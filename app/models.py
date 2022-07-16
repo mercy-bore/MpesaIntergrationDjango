@@ -253,7 +253,7 @@ class B2CPayment(BaseModel):
         return self.ReceiverPartyPublicName
     
 STATUS = ((1, "Pending"), (0, "Complete"))
-
+REGISTERED = ((1,"N"),(0,"Y"))
 class Transaction(models.Model):
     """This model records all the mpesa payment transactions"""
     transaction_no = models.CharField(default=uuid.uuid4, max_length=50, unique=True)
@@ -266,6 +266,25 @@ class Transaction(models.Model):
     receipt_no = models.CharField(max_length=200, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     ip = models.CharField(max_length=200, blank=True, null=True)
+
+    def __unicode__(self):
+        return f"{self.transaction_no}"
+class B2CTransaction(models.Model):
+    """This model records all the b2c mpesa payment transactions"""
+    transaction_no = models.CharField(default=uuid.uuid4, max_length=50, unique=True)
+    checkout_request_id = models.CharField(max_length=200)
+    reference = models.CharField(max_length=40, blank=True)
+    description = models.TextField(null=True, blank=True)
+    amount = models.CharField(max_length=10)
+    status = models.CharField(max_length=15, choices=STATUS, default=1)
+    receipt_no = models.CharField(max_length=200, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    ip = models.CharField(max_length=200, blank=True, null=True)
+    ReceiverPartyPublicName	=  models.CharField(max_length = 50,null=True,blank=True)
+    B2CRecipientIsRegisteredCustomer = models.CharField(max_length = 15,choices=REGISTERED, default =1)
+    B2CChargesPaidAccountAvailableFunds= models.IntegerField(blank=True,null=True)
+    B2CUtilityAccountAvailableFunds = models.IntegerField(blank=True, null=True)
+    B2CWorkingAccountAvailableFunds = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         return f"{self.transaction_no}"

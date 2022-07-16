@@ -21,6 +21,6 @@ class LipanaMpesaPpassword:
     data_to_encode = Business_short_code + passkey + lipa_time
     online_password = base64.b64encode(data_to_encode.encode())
     decode_password = online_password.decode('utf-8')
-    SecurityCredential= "l0SibbbSZXfy7/E3tdd5yq3V9ac8y1je+eHubrz5uPZL56CjE96Hg4thHhjs9DUd1K10bbeM222RPYx4fGCDyKDa5sAuo1EA7dHD7vy8NkVnZv4aJ7OL5HKRNUQpAP50fuI9I7sVs9wwbammjYzw0UvHHFrxfa7fjBDpAQ6Sa43bqmwsWgRquWyqDiCcgtkjg3HIIwJXcMZgGo1Je6HdUI1xw4bgu62dg+Zlvudft7pEcdJrCYPqzT3Z+IkbFZV0kkCthdVulCvkvyIc1mHsZqLOaNz+wRW2EhPCh9lXxOrJKgg5qoNut87VIdOpvAnZ3+Aju6ulumFZwZnBJpj8NQ==ss"
-    callback_url ='https://6772-41-90-187-177.in.ngrok.io/callback'
+    SecurityCredential="c0YghxRzS5emWWrU51pLL4qmeJCU5kbPzpn91NDnUO2gIp04ARiKBoLf9kSdZsodhs3fXJqDkl4VzHwkVhGAXplAWe76TlQvjRtXRDd0kxx65oEB54ZJc0jJ/JV5Vc46s6LRY/eKcGCMqc7UO05bW7bApQTbbJIPLNpk8w6gSIIgJMCv2m4TYFmYZ1d0Qrcf20nw/GY/x+QLGLlX7/br8SvzaLFKamZ2SfYI5/F4sMkiSi/TgFnSbRsFU3nSbBjA6dCcevAa8yFZb++YsnSJgHx3NvmQnFXrFIjheqaZDsHOyZR+35u7A8ODkhfuluH+qcY5xuDvacuXQZMxkMGAgA=="
+    callback_url ='https://a3c7-41-90-185-245.in.ngrok.io/callback'
     access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'

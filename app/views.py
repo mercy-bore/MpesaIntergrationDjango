@@ -22,8 +22,10 @@ import requests
 import json
 from decouple import config
 import logging
-from .stkpush import MpesaGateWay
+from .stkpush import *
 gateway = MpesaGateWay()
+gatewayb = MpesaB2CPayment()
+
 # ! Mpesa
 
 def getAccessToken(request):
@@ -48,7 +50,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://6772-41-90-187-177.in.ngrok.io/callback",
+        "CallBackURL": "https://a3c7-41-90-185-245.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -63,15 +65,12 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://6772-41-90-187-177.in.ngrok.io/confirmation",
-               "ValidationURL": "https://6772-41-90-187-177.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://a3c7-41-90-185-245.in.ngrok.io/confirmation",
+               "ValidationURL": "https://a3c7-41-90-185-245.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
-
-
-
-    
+ 
 @csrf_exempt
 def validation(request):
     context = {
@@ -83,7 +82,7 @@ def validation(request):
 
 def B2C(request):
     access_token = MpesaAccessToken.validated_mpesa_access_token
-    api_url = "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
+    b2c_api_url = "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest"
     headers = {"Authorization": "Bearer %s" % access_token}
     request = {
         "InitiatorName": "testapi",
@@ -93,12 +92,12 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://6772-41-90-187-177.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://6772-41-90-187-177.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://a3c7-41-90-185-245.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://a3c7-41-90-185-245.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
-    response = requests.post(api_url, json=request, headers=headers)
+    response = requests.post(b2c_api_url, json=request, headers=headers)
     print(response.text)
     return HttpResponse('Success.Transaction from Piczangu to client initiated.',response)
 @csrf_exempt
@@ -116,69 +115,9 @@ def b2c_queue(request):
         "ResultDesc": "Accepted"
     }
     return JsonResponse(dict(context))
-class C2BPayments(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = C2BPaymentSerializer
-    def post(self,request,format=None):
-        mpesa_body =request.body.decode('utf-8')
-        mpesa_payment = json.loads(mpesa_body)
-        payment = MpesaPayment.objects.create(
-            first_name=mpesa_payment['first_name'], #FirstName  
-            last_name=mpesa_payment['last_name'], #LastName
-            middle_name=mpesa_payment['middle_name'], #MiddleName
-            description=mpesa_payment['description'],#TransID
-            phone_number=mpesa_payment['phone_number'], #MSISDN
-            amount=mpesa_payment['amount'], #TransAmount
-            reference=mpesa_payment['reference'], #BillRefNumber
-            organization_balance=mpesa_payment['organization_balance'], #OrgAccountBalance
-            type=mpesa_payment['type'], #TransactionType
-        )   
-        serializer = C2BPaymentSerializer(data=request.data)
-        if serializer.is_valid():
-            payment = serializer.save()
-            qs = json.dumps(payment)
-            context = {
-                "ResultCode": 0,
-                "ResultDesc": "Accepted"
-            }
-            message = {'detail':qs, 'status':True, 'context':context}
-            return Response(message, request.data,status=status.HTTP_201_CREATED)
-        else: #if the serialzed data is not valid, return erro response
-                data = {"detail":serializer.errors, 'status':False}            
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-    def get_queryset(self):
-            return MpesaPayment.objects.all()
+
     
 
-class B2CPayments(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = B2CPaymentSerializer
-    def post(self,request,format=None):
-        mpesa_body =request.body.decode('utf-8')
-        mpesa_payment = json.loads(mpesa_body)
-        payment = B2CPayment.objects.create(
-            ResultDesc=mpesa_payment['ResultDesc'], 
-            TransactionId=mpesa_payment['TransactionId'], #
-            TransactionReceipt=mpesa_payment['TransactionReceipt'], #
-            TransactionAmount=mpesa_payment['TransactionAmount'], #
-            TransactionCompletedDateTime=mpesa_payment['TransactionCompletedDateTime'], #
-            ReceiverPartyPublicName=mpesa_payment['ReceiverPartyPublicName'], #
-        )   
-        serializer = B2CPaymentSerializer(data=request.data)
-        if serializer.is_valid():
-            payment = serializer.save()
-            qs = json.dumps(payment)
-            context = {
-                "ResultCode": 0,
-                "ResultDesc": "Accepted"
-            }
-            message = {'detail':qs, 'status':True, 'context':context}
-            return Response(message, request.data,status=status.HTTP_201_CREATED)
-        else: #if the serialized data is not valid, return error response
-                data = {"detail":serializer.errors, 'status':False}            
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-    def get_queryset(self):
-            return B2CPayment.objects.all()
        
 # * end of mpesa
 # * auth
@@ -256,6 +195,10 @@ class TransactionView(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
 
+class B2CTransactionView(viewsets.ModelViewSet):
+    serializer_class = B2CTransactionSerializer
+    queryset = B2CTransaction.objects.all()
+
 class PhotographerSignupView(generics.CreateAPIView):
     queryset = Photographer.objects.all()
     permission_classes = (AllowAny,)
@@ -317,41 +260,31 @@ class MpesaCheckout(APIView):
             payload = {"data":serializer.validated_data, "request":request}
             res = gateway.stk_push_request(payload)
             return Response(res, status=200)
+class MpesaB2CCheckout(APIView):
+    serializer = MpesaB2CCheckoutSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            payload = {"data":serializer.validated_data, "request":request}
+            res = gatewayb.b2c_request(payload)
+            return Response(res, status=200)
 
 
 class MpesaCallBack(APIView):
-    
-    # queryset = Transaction.objects.all()
-    # permission_classes = (AllowAny,)
-    # serializer_class = TransactionSerializer
     def get(self, request):
         return Response(MpesaPayment.objects.all(), status=200)
-
-        # return Response({"status": "OK"}, status=200)
 
     def post(self, request, *args, **kwargs):
         logging.info("{}".format("Callback from MPESA"))
         data = request.body
         return gateway.callback_handler(json.loads(data))
-    #!
-    # permission_classes = [AllowAny]
-    # serializer_class =TransactionSerializer
-    # def post(self,request,format=None):
-    #     logging.info("{}".format("Callback from MPESA"))
-    #     mpesa_payment =request.body
-    #     payment = Transaction.objects.create(mpesa_payment) 
-    #     serializer = TransactionSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         payment = serializer.save()
-    #         qs = json.dumps(payment)
-    #         context = {
-    #             "ResultCode": 0,
-    #             "ResultDesc": "Accepted"
-    #         }
-    #         message = {'detail':qs, 'status':True, 'context':context}
-    #         return Response(message, request.data,status=status.HTTP_201_CREATED)
-    #     else: #if the serialzed data is not valid, return erro response
-    #             data = {"detail":serializer.errors, 'status':False}            
-    #             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-    # def get_queryset(self):
-    #         return Transaction.objects.all()
+class MpesaB2CResponse(APIView):
+    def get(self, request):
+        return Response(B2CTransaction.objects.all(), status=200)
+
+    def post(self, request, *args, **kwargs):
+        logging.info("{}".format("Callback from MPESA"))
+        data = request.body
+        return gatewayb.b2c_callback_handler(json.loads(data))
+    
