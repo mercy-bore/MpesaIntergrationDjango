@@ -50,7 +50,7 @@ def lipa_na_mpesa_online(request):
         "PartyA": 254798670839,  # replace with your phone number to get stk push
         "PartyB": LipanaMpesaPpassword.Business_short_code,
         "PhoneNumber": 254798670839,  # replace with your phone number to get stk push
-        "CallBackURL": "https://a3c7-41-90-185-245.in.ngrok.io/callback",
+        "CallBackURL": "https://764f-41-90-176-209.in.ngrok.io/callback",
         "AccountReference":"Piczangu",
         "TransactionDesc": "Testing stk push"
     }
@@ -65,8 +65,8 @@ def register_urls(request):
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPpassword.Test_c2b_shortcode,
                "ResponseType": "Completed",
-               "ConfirmationURL": "https://a3c7-41-90-185-245.in.ngrok.io/confirmation",
-               "ValidationURL": "https://a3c7-41-90-185-245.in.ngrok.io/validation"}
+               "ConfirmationURL": "https://764f-41-90-176-209.in.ngrok.io/confirmation",
+               "ValidationURL": "https://764f-41-90-176-209.in.ngrok.io/validation"}
     response = requests.post(api_url, json=options, headers=headers)
     print(response.text)
     return HttpResponse(response.text)
@@ -92,8 +92,8 @@ def B2C(request):
         "PartyA": 600992,
         "PartyB": 254798670839,
         "Remarks": "Test remarks",
-        "QueueTimeOutURL": "https://a3c7-41-90-185-245.in.ngrok.io/b2c/queue",
-        "ResultURL": "https://a3c7-41-90-185-245.in.ngrok.io/b2c/result",
+        "QueueTimeOutURL": "https://764f-41-90-176-209.in.ngrok.io/b2c/queue",
+        "ResultURL": "https://764f-41-90-176-209.in.ngrok.io/b2c/result",
         "Occassion": "",
   }
 
